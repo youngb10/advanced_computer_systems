@@ -33,12 +33,31 @@ float get_float(){
     //     this may need to be fixed
     float rndflt = float(rand())/(float(RAND_MAX));
     //cout<<rndflt<<endl;
+    return rndflt;
 }
 
 void print_float(vector<vector<float>> & in_matrix){
     for(int i = 0; i < in_matrix.size(); i++){
         for(int j = 0; j < in_matrix.size(); j++){
             cout << in_matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+};
+
+void print_float_avx(vector<vector<__m256>> & in_matrix_avx){
+    cout << "in print float avx" << endl;
+    cout << in_matrix_avx.size() << endl;
+    for(int i = 0; i < in_matrix_avx.size(); i++){
+        for(int j = 0; j < in_matrix_avx.size(); j++){
+            //int vert_mod = i%8;
+            int horiz_reg = floor(i/8);
+            int vert_reg = floor(j/8);
+            int horiz_rem = i-8*horiz_reg;
+            int vert_rem = j-8*vert_reg;
+            //cout << in_matrix[i][j] << " ";
+            cout << "horiz_reg " << horiz_reg << " vert_reg " << vert_reg << " horiz_rem " << horiz_rem << " " << in_matrix_avx[horiz_reg][vert_reg][0] << endl;
         }
         cout << endl;
     }
@@ -111,6 +130,7 @@ int main(int argc, char* argv[]){
     vector<vector<float>> in_matrix; 
     vector<vector<float>> out_matrix;
     vector<vector<__m256>> in_matrix_avx;
+    vector<vector<__m256>> out_matrix_avx;
     if( (numtype == "float") && (numsize == 4) ){
         // construct float matrix 
         for(int i = 0; i < matrix_size; i++){
@@ -127,16 +147,26 @@ int main(int argc, char* argv[]){
         // construct __m256 matrix
         // need to pad with 0's at the end if not perfectly divisable 
         int num_of_regs = floor(matrix_size/8) + 1;
-        cout << num_of_regs << endl;
-        for(int i = 0; i < num_of_regs; i++){
-            for(int j = 0; j < num_of_regs; j++){
+        //cout << num_of_regs << endl;
+        // looping through the required registers 
+        // [(x x x x x x x x) (x x x x x x x x)] <- two 8 float registers | two vectors down 
+        // [(x x x x x x x x) (x x x x x x x x)]                          |
+        //                  ^ one vectotr wide 
+        for(int vert = 0; vert < num_of_regs; vert++){
+            for(int horiz = 0; horiz < num_of_regs; horiz++){
+                // looping through each element in register and checking if it exists
+                cout << "vert " << vert << " horiz " << horiz << endl; 
+                // set the temporary register with 0s 
+                __m256 temp_reg = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+                for(int reg_i = 0; reg_i < 8; reg_i++){
+                    int real_i = horiz*8 + reg_i;
+                    cout << real_i << " ";
 
-                __m256 temp_reg;
-                //if(i + 1 < matrix_size)
-                //temp_reg = _mm256_set_ps(in_matrix[i+0][j+0],)
-
-            }
-        }
+                }
+                cout << endl;
+            };
+        };
+        print_float_avx(in_matrix_avx);
     }
     else{
         cout << "funcitonality not added yet" << endl;
