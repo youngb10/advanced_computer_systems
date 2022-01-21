@@ -47,21 +47,26 @@ void print_float(vector<vector<float>> & in_matrix){
 };
 
 void print_float_avx(vector<vector<__m256>> & in_matrix_avx){
-    cout << "in print float avx" << endl;
-    cout << in_matrix_avx.size() << endl;
-    for(int i = 0; i < in_matrix_avx.size(); i++){
-        for(int j = 0; j < in_matrix_avx.size(); j++){
-            //int vert_mod = i%8;
-            int horiz_reg = floor(i/8);
-            int vert_reg = floor(j/8);
-            int horiz_rem = i-8*horiz_reg;
-            int vert_rem = j-8*vert_reg;
-            //cout << in_matrix[i][j] << " ";
-            cout << "horiz_reg " << horiz_reg << " vert_reg " << vert_reg << " horiz_rem " << horiz_rem << " " << in_matrix_avx[horiz_reg][vert_reg][0] << endl;
-        }
-        cout << endl;
-    }
+    cout << "in print avx fn " << endl;
     cout << endl;
+    int matrix_size = in_matrix_avx.size();
+    int num_of_regs = floor(matrix_size/8) + 1;
+    for(int vert = 0; vert < num_of_regs; vert++){
+        cout << endl;
+        //vector<__m256> temp_row;
+        for(int horiz = 0; horiz < num_of_regs; horiz++){
+            // looping through each element in register and checking if it exists
+            cout << "vert " << vert << " horiz " << horiz << endl; 
+            // set the temporary register with 0s 
+            //__m256 temp_reg = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+            for(int reg_i = 0; reg_i < 8; reg_i++){
+                cout << in_matrix_avx[horiz][vert][reg_i] << " ";
+            }
+            //cout << endl;
+            //temp_row.push_back(temp_reg);
+        };
+        //in_matrix_avx.push_back(temp_row);
+    };
 };
 
 void cpp_multiply( vector<vector<float>> & in_matrix, vector<vector<float>> & out_matrix ){
@@ -152,7 +157,8 @@ int main(int argc, char* argv[]){
         // [(x x x x x x x x) (x x x x x x x x)] <- two 8 float registers | two vectors down 
         // [(x x x x x x x x) (x x x x x x x x)]                          |
         //                  ^ one vectotr wide 
-        for(int vert = 0; vert < num_of_regs; vert++){
+        for(int vert = 0; vert < matrix_size; vert++){
+            vector<__m256> temp_row;
             for(int horiz = 0; horiz < num_of_regs; horiz++){
                 // looping through each element in register and checking if it exists
                 cout << "vert " << vert << " horiz " << horiz << endl; 
@@ -161,10 +167,17 @@ int main(int argc, char* argv[]){
                 for(int reg_i = 0; reg_i < 8; reg_i++){
                     int real_i = horiz*8 + reg_i;
                     cout << real_i << " ";
-
+                    if(real_i < matrix_size){
+                        temp_reg[reg_i] = in_matrix[vert][real_i];
+                    }
+                    else{
+                        temp_reg[reg_i] = 0.0;
+                    }
                 }
                 cout << endl;
+                temp_row.push_back(temp_reg);
             };
+            in_matrix_avx.push_back(temp_row);
         };
         print_float_avx(in_matrix_avx);
     }
