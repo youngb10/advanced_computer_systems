@@ -8,9 +8,10 @@
                 "-mavx",
                 "-fdiagnostics-color=always",
                 "-g",
+                "-O1",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "${fileDirname}"
