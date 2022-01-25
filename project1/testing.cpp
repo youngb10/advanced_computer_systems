@@ -6,6 +6,7 @@
 #include<vector>
 #include<fstream> // input output files
 #include <immintrin.h> // avx stuff
+#include <xmmintrin.h>
 #include <cmath> // floor
 using namespace std;
 /* in launch
@@ -27,6 +28,7 @@ using namespace std;
 __m256 _mm256_set1_ps(float a);
 __m256 _mm256_set_ps (float e7, float e6, float e5, float e4, float e3, float e2, float e1, float e0);
 __m256 _mm256_mul_ps (__m256 a, __m256 b);
+__m256 _mm256_mul_ps(__m256 a, __m256 b);
 
 float get_float(){
     //cout<<RAND_MAX<<endl;
@@ -37,78 +39,125 @@ float get_float(){
     return rndflt;
 }
 
-void print_float(vector<vector<float>> & in_matrix){
-    for(uint i = 0; i < in_matrix.size(); i++){
-        for(uint j = 0; j < in_matrix.size(); j++){
-            cout << in_matrix[i][j] << " ";
+void print_float(vector<vector<float>> & in_matrix_cpp){
+    for(uint i = 0; i < in_matrix_cpp.size(); i++){
+        for(uint j = 0; j < in_matrix_cpp.size(); j++){
+            cout << left << setfill(' ') << setw(10);
+            cout << in_matrix_cpp[i][j];
         }
         cout << endl;
     }
     cout << endl;
 };
 
-void print_float_avx(vector<vector<__m256>> & in_matrix_avx){
-    cout << left;
-    cout << "in print avx fn " << endl;
-    cout << endl;
-    uint matrix_size = in_matrix_avx.size();
-    // divide by 8.0 to convert to floa
+void transpose(vector<vector<float>> & in_matrix_cpp, vector<vector<float>> & in_matrix_cpp_transpose){
+    // creates transpose of input matrix
+    // this is used for processing in multiplying avx
+    for(uint i = 0; i < in_matrix_cpp.size(); i++){
+        for(uint j = 0; j < in_matrix_cpp.size(); j++){
+            in_matrix_cpp_transpose[j][i] = in_matrix_cpp[i][j];
+        }
+    }
+};
+
+void multiply_float_avx(vector<vector<float>> & in_matrix_cpp, vector<vector<float>> & in_matrix_cpp_transpose, vector<vector<float>> & out_matrix, bool print_transpose = false, bool print_output = false){
+    // only works on square matrices
+    // set print_transpose or print_output to true for printing 
+    uint matrix_size = in_matrix_cpp.size();
     uint num_of_regs = ceil(matrix_size/8.0);
+    __m256 in_matrix_avx [matrix_size][num_of_regs];
+    __m256 out_matrix_avx [matrix_size][num_of_regs];
+    __m256 in_matrix_avx_transpose [matrix_size][num_of_regs];
+    // take input matrix (vector form) and create the vectorized version using __m256
+    // since matrix is square, the indecies are the same for the transpose 
     for(uint vert = 0; vert < matrix_size; vert++){
-        cout << endl;
-        //vector<__m256> temp_row;
         for(uint horiz = 0; horiz < num_of_regs; horiz++){
             // looping through each element in register and checking if it exists
-            // cout << "vert " << vert << " horiz " << horiz; 
-            // set the temporary register with 0s 
-            //__m256 temp_reg = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+            //cout << "vert " << vert << " horiz " << horiz << endl; 
+            vector<float> temp_vector;
+            vector<float> temp_vector_transpose;
             for(uint reg_i = 0; reg_i < 8; reg_i++){
-                cout << setprecision(2) << setw(8) << in_matrix_avx[vert][horiz][reg_i];
+                uint real_i = horiz*8 + reg_i;
+                //cout << real_i << " ";
+                if(real_i < matrix_size){
+                    temp_vector.push_back(in_matrix_cpp[vert][real_i]);
+                    temp_vector_transpose.push_back(in_matrix_cpp_transpose[vert][real_i]);
+                    if(print_transpose){
+                        cout << left << setfill(' ') << setw(10);
+                        cout << in_matrix_cpp[vert][real_i];
+                    }
+                }
+                else{
+                    temp_vector.push_back(0);
+                    temp_vector_transpose.push_back(0);
+                    if(print_transpose){
+                        cout << left << setfill(' ') << setw(10);
+                        cout << " 0 ";
+                    }
+                }
             }
-            //cout << endl;
-            //temp_row.push_back(temp_reg);
+            *(*(in_matrix_avx + vert) + horiz) = _mm256_set_ps(temp_vector[7],temp_vector[6],temp_vector[5],temp_vector[4],
+                                                               temp_vector[3],temp_vector[2],temp_vector[1],temp_vector[0]);
+            *(*(in_matrix_avx_transpose + vert) + horiz) = _mm256_set_ps(temp_vector_transpose[7],temp_vector_transpose[6],temp_vector_transpose[5],temp_vector_transpose[4],
+                                                               temp_vector_transpose[3],temp_vector_transpose[2],temp_vector_transpose[1],temp_vector_transpose[0]);
         };
-        // cout << endl;
-        //in_matrix_avx.push_back(temp_row);
+        if(print_transpose){
+            cout << endl;
+            cout << endl;
+        }
+    };
+    
+    // compute the multiplication using in_matrix and in_matrix_transpose 
+    // must loop through all rows of first matrix
+    for(uint vert = 0; vert < matrix_size; vert++){
+        // must loop through all rows of second matrix 
+        for(uint vert_t = 0; vert_t < matrix_size; vert_t++){
+            float sum = 0;
+            // only need to loop through columns once because the indecies must be aligned
+            for(uint horiz = 0; horiz < num_of_regs; horiz++){
+                // multiply every register in in matrix with every register in in matrix transpose
+                // then sum together and put into output matrix 
+                // __m256 _mm256_mul_ps (__m256 a, __m256 b);
+                __m256 result = _mm256_mul_ps(in_matrix_avx[vert][horiz],in_matrix_avx_transpose[vert_t][horiz]);
+                float result_flt[8];
+                _mm256_storeu_ps(result_flt, result);
+                //cout << result_flt[0] << " " << result_flt[1] << " " << result_flt[2] << " " << result_flt[3] << " ";
+                //cout << result_flt[4] << " " << result_flt[5] << " " << result_flt[6] << " " << result_flt[7] << " ";
+                for(uint i = 0; i < 8; i++){
+                    sum += result_flt[i];
+                }
+            }
+            if(print_output){
+                cout << left << setfill(' ') << setw(10);
+                cout << sum;
+            }
+        }
+        if(print_output){
+            cout << endl;
+        }
     };
 };
 
-void cpp_multiply( vector<vector<float>> & in_matrix, vector<vector<float>> & out_matrix ){
-    // only works for square matrices  
-    for(uint i = 0; i < in_matrix.size();i++){
-        for(uint j = 0; j < in_matrix.size(); j++){
-
+void multiply_cpp( vector<vector<float>> & in_matrix_cpp, vector<vector<float>> & out_matrix_cpp, bool print_output = false ){
+    // only works for square matrices 
+    for(uint i = 0; i < in_matrix_cpp.size();i++){
+        for(uint j = 0; j < in_matrix_cpp.size(); j++){
             // grab left matrix row; in_matrix[i][1]
             // grab right matrix column; in_matrix[1][j]
             // multiply each value and add; so in_matrix[i][1]*in_matrix[1][j]
             // then in_matrix[i][2]*in_matrix[2][j] etc. 
             float temp = 0; 
-            for(uint x = 0; x < in_matrix.size(); x++){
-                temp += in_matrix[i][x]*in_matrix[x][j];
+            for(uint x = 0; x < in_matrix_cpp.size(); x++){
+                temp += in_matrix_cpp[i][x]*in_matrix_cpp[x][j];
             }
-            out_matrix[i][j] = temp;
+            out_matrix_cpp[i][j] = temp;
         }
+    }
+    if(print_output){
+        print_float(out_matrix_cpp);
     }
 }
 
-void avx_multiply( vector<vector<float>> & in_matrix, vector<vector<float>> & out_matrix ){
-    // only works for square matrices  
-    for(uint i = 0; i < in_matrix.size();i++){
-        for(uint j = 0; j < in_matrix.size(); j++){
-
-            // grab left matrix row; in_matrix[i][1]
-            // grab right matrix column; in_matrix[1][j]
-            // multiply each value and add; so in_matrix[i][1]*in_matrix[1][j]
-            // then in_matrix[i][2]*in_matrix[2][j] etc. 
-            float temp = 0; 
-            for(uint x = 0; x < in_matrix.size(); x++){
-                //temp += _mm256_mul_ps(in_matrix[i][x],in_matrix[x][j]);
-            }
-            out_matrix[i][j] = temp;
-        }
-    }
-}
-// getting weird seg fault on certain values. like 11x11
 int main(int argc, char* argv[]){
     srand(1);
     // file input scheme from cs1200
@@ -136,23 +185,17 @@ int main(int argc, char* argv[]){
     cout<<"matrix size: " << matrix_size << " x " << matrix_size <<endl;
     cout<<"number type " << numtype << " " << numsize << " bytes " <<endl;
     
-    vector<vector<float>> in_matrix; 
-    vector<vector<float>> out_matrix;
-    
+    // divide by 8.0 to convert to float 
     uint num_of_regs = ceil(matrix_size/8.0);
-    __m256 in_matrix_avx [matrix_size][num_of_regs];
-    __m256 out_matrix_avx [matrix_size][num_of_regs];
-    
-    // initialize in and out matrix 
-    for(uint vert = 0; vert < matrix_size; vert++){
-        for(uint horiz = 0; horiz < num_of_regs; horiz++){
-            *(*(in_matrix_avx + vert) + horiz) = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
-            *(*(out_matrix_avx + vert) + horiz) = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
-        }
-    }
+
+    vector<vector<float>> in_matrix_cpp; 
+    vector<vector<float>> out_matrix_cpp;
+    vector<vector<float>> in_matrix_cpp_transpose;
+    vector<vector<float>> out_matrix_avx;
 
     if( (numtype == "float") && (numsize == 4) ){
         // construct float matrix for regular cpp
+        // also make empty array for out matrix and in matrix transpose
         for(uint i = 0; i < matrix_size; i++){
             vector<float> temp;
             vector<float> temp2;
@@ -160,59 +203,42 @@ int main(int argc, char* argv[]){
                 temp.push_back(get_float());
                 temp2.push_back(0);
             }
-            in_matrix.push_back(temp);
-            out_matrix.push_back(temp2);
+            in_matrix_cpp.push_back(temp);
+            out_matrix_cpp.push_back(temp2);
+            out_matrix_avx.push_back(temp2);
+            in_matrix_cpp_transpose.push_back(temp2);
         }
-        print_float(in_matrix);
-        
+        //print_float(in_matrix_cpp);
+        // transpose in matrix for computation in avx multiply 
+        transpose(in_matrix_cpp,in_matrix_cpp_transpose);
+        //print_float(in_matrix_cpp_transpose);
         // construct __m256 matrix
         // need to pad with 0's at the end if not perfectly divisable 
-        // divide by 8.0 to convert to float 
-        uint num_of_regs = ceil(matrix_size/8.0);
-        //cout << num_of_regs << endl;
+        
         // looping through the required registers 
         // [(x x x x x x x x) (x x x x x x x x)] <- two 8 float registers | two vectors down 
         // [(x x x x x x x x) (x x x x x x x x)]                          |
         //                  ^ one vectotr wide 
-        //vector<__m256> temp_row;
+        
+        cout << "input matrix: " << endl;
+        cout << endl;
+        print_float(in_matrix_cpp);
 
-        for(uint vert = 0; vert < matrix_size; vert++){
-            for(uint horiz = 0; horiz < num_of_regs; horiz++){
-                // looping through each element in register and checking if it exists
-                cout << "vert " << vert << " horiz " << horiz << endl; 
-                vector<float> temp_vector;
-                for(uint reg_i = 0; reg_i < 8; reg_i++){
-                    uint real_i = horiz*8 + reg_i;
-                    cout << real_i << " ";
-                    if(real_i < matrix_size){
-                        temp_vector.push_back(in_matrix[vert][real_i]);
-                    }
-                    else{
-                        temp_vector.push_back(0);
-                    }
-                }
-                *(*(in_matrix_avx + vert) + horiz) = _mm256_set_ps(temp_vector[7],temp_vector[6],temp_vector[5],temp_vector[4],
-                                                temp_vector[3],temp_vector[2],temp_vector[1],temp_vector[0]);
-                cout << endl;
-                
+        cout << "transpose matrix: " << endl;
+        cout << endl;
+        print_float(in_matrix_cpp_transpose);
 
-            };
+        cout << "squaring results using cpp: " << endl;
+        cout << endl;
+        multiply_cpp(in_matrix_cpp,out_matrix_cpp,true);
 
-            //in_matrix_avx.push_back(temp_row);
-        };
-        //__m256 (**ptr)[matrix_size][num_of_regs];
-        //*ptr = &arr;
-        //__m256 (*ptr)[1];
-        //__m256 arr2[1];
-        //ptr = &arr2;
-        //print_float_avx(in_matrix_avx);
+        cout << "squaring results using avx: " << endl;
+        cout << endl;
+        multiply_float_avx(in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
     }
     else{
         cout << "funcitonality not added yet" << endl;
     }
-
-    //cpp_multiply(in_matrix,out_matrix);
-    //print_float(out_matrix);
 
     // https://www.cs.fsu.edu/~engelen/courses/HPC-adv/intref_cls.pdf
 
@@ -221,13 +247,11 @@ int main(int argc, char* argv[]){
     // https://chryswoods.com/vector_c++/immintrin.html
     // _mm256_set1_ps(float a) : This returns a __m256 vector, where all eight elements of the vector are set equal to a, i.e. the vector is [a,a,a,a,a,a,a,a].
 
-
     //__m256 a = _mm256_set_ps(7.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0);
     //__m256 b = _mm256_set_ps(7.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
     //__m256 c = _mm256_set1_ps(2.0);
     //__m256 out = _mm256_mul_ps(a,b);
     //cout << a[0] << endl;
-
 
     return 0;
 };
