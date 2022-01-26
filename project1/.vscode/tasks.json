@@ -6,6 +6,7 @@
             "command": "/usr/bin/g++",
             "args": [
                 "-mavx",
+                "-mavx2",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",

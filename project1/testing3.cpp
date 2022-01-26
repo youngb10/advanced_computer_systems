@@ -57,8 +57,16 @@ int main(int argc, char* argv[]){
     __m256 b = _mm256_set_ps(0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0);
     __m256 out = _mm256_mul_ps(a, b);
      
-    float d[8];
-    _mm256_storeu_ps(d, out);
-    cout << "result " << d[0] << " " << d[1] << " " << d[2] << " " << d[3] << " " << d[4] << " " << d[5] << " " << d[6] << " " << d[7] << endl;
+    //float d[8];
+    //_mm256_storeu_ps(d, out);
+    //cout << "result " << d[0] << " " << d[1] << " " << d[2] << " " << d[3] << " " << d[4] << " " << d[5] << " " << d[6] << " " << d[7] << endl;
+
+    __m256i num = _mm256_set_epi32(0,0,0,2,10,0,0,1);
+    __m256i d[1];
+    // void _mm256_storeu_si256 (__m256i * mem_addr, __m256i a
+    _mm256_storeu_si256(d,num);
+    //cout << d[0][0];
+    cout << "result " << d[0][0] << " " << d[1][0] << " " << d[2][0] << " " << d[3][0] << " " << d[4][0] << " " << d[5][0] << " " << d[6][0] << " " << d[7][0] << endl;
+
     return 0;
 };
