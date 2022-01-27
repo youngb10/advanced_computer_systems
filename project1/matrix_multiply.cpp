@@ -8,6 +8,7 @@
 #include <immintrin.h> // avx stuff
 #include <xmmintrin.h>
 #include <cmath> // floor
+#include <sys/resource.h>
 using namespace std;
 
 // Useful Links:
@@ -52,7 +53,6 @@ __m256 _mm256_castsi256_ps (__m256i a);
 __m256i _mm256_castps_si256 (__m256 a);
 __m256i _mm256_setr_epi32 (int e7, int e6, int e5, int e4, int e3, int e2, int e1, int e0);
 void _mm256_storeu_si256 (__m256i * mem_addr, __m256i a);
-
 
 // my function prototypes (will be using overloading)
 float get_float();
@@ -233,8 +233,8 @@ void multiply_avx(ofstream &output, vector<vector<float>> & in_matrix_cpp, vecto
 };
 
 void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, vector<vector<short int>> & in_matrix_cpp_transpose, vector<vector<int>> & out_matrix, bool print_transpose = false, bool print_output = false){
-    // fails at exactly 590
-    
+    // fails at exactly 590. probably to do with vectors doing weird things. 
+    cout << in_matrix_cpp_transpose[0][0] << endl;
     cout << in_matrix_cpp[0][0] << endl;
     // using transpose to minimize cache misses
     // only works on square matrices
@@ -242,7 +242,6 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
     //uint matrix_size = 999;
     uint matrix_size = in_matrix_cpp.size();
     uint num_of_regs = ceil(matrix_size/8.0);
-    
     
     // need to double so that it can be multiplied
     // very hacky, not sure why this does what it does
@@ -255,6 +254,7 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
     //__m256i in_matrix_avx_transpose [9][9];
     // take input matrix (vector form) and create the vectorized version using __m256
     // since matrix is square, the indecies are the same for the transpose 
+    cout << in_matrix_cpp_transpose[0][0] << endl;
     cout << in_matrix_cpp[0][0] << endl;
     for(uint vert = 0; vert < matrix_size; vert++){
         for(uint horiz = 0; horiz < num_of_regs; horiz++){
@@ -336,10 +336,9 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
             // issue
             
             in_matrix_avx[vert][horiz] = _mm256_set_epi32(temp_vector[7],temp_vector[6],temp_vector[5],temp_vector[4],
-                                                                  temp_vector[3],temp_vector[2],temp_vector[1],temp_vector[0]);
+                                                          temp_vector[3],temp_vector[2],temp_vector[1],temp_vector[0]);
             in_matrix_avx_transpose[vert][horiz] = _mm256_set_epi32(temp_vector_transpose[7],temp_vector_transpose[6],temp_vector_transpose[5],temp_vector_transpose[4],
-                                                                             temp_vector_transpose[3],temp_vector_transpose[2],temp_vector_transpose[1],temp_vector_transpose[0]);
-            
+                                                                    temp_vector_transpose[3],temp_vector_transpose[2],temp_vector_transpose[1],temp_vector_transpose[0]);
         };
         if(print_transpose){
             cout << endl;
@@ -472,6 +471,11 @@ void multiply_cpp(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
 }
 
 int main(int argc, char* argv[]){
+    // this is stack overflow
+    //int* array1234 = new int[1000000000000];    
+    const rlim_t kStackSize = 1000 * 1024 * 1024;   // min stack size = 16 MB
+    struct rlimit rl;
+
 
     srand(1);
     
@@ -571,7 +575,7 @@ int main(int argc, char* argv[]){
         //multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
         long long end2 = time(NULL);
         cout << "avx multiplication took: " << end2 - start2 << endl;
-        
+
         /*
         cout << "input matrix: " << endl;
         cout << endl;
@@ -600,6 +604,7 @@ int main(int argc, char* argv[]){
     }
     else if( (numtype == "fixed") && (numsize == 2) ){
     
+        // below vectors get lost... not sure why yet 
         vector<vector<short int>> in_matrix_cpp; 
         vector<vector<short int>> in_matrix_cpp_transpose;
         vector<vector<int>> out_matrix_cpp;
