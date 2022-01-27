@@ -233,30 +233,49 @@ void multiply_avx(ofstream &output, vector<vector<float>> & in_matrix_cpp, vecto
 };
 
 void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, vector<vector<short int>> & in_matrix_cpp_transpose, vector<vector<int>> & out_matrix, bool print_transpose = false, bool print_output = false){
+    // fails at exactly 590
+    
+    cout << in_matrix_cpp[0][0] << endl;
     // using transpose to minimize cache misses
     // only works on square matrices
     // set print_transpose or print_output to true for printing 
+    //uint matrix_size = 999;
     uint matrix_size = in_matrix_cpp.size();
     uint num_of_regs = ceil(matrix_size/8.0);
+    
+    
     // need to double so that it can be multiplied
     // very hacky, not sure why this does what it does
+    // each single one does not cause failure... 
     __m256i in_matrix_avx [matrix_size][num_of_regs*2];
     __m256i out_matrix_avx [matrix_size][num_of_regs*2];
     __m256i in_matrix_avx_transpose [matrix_size][num_of_regs*2];
+    //__m256i in_matrix_avx [9][9];
+    //__m256i out_matrix_avx [9][9];
+    //__m256i in_matrix_avx_transpose [9][9];
     // take input matrix (vector form) and create the vectorized version using __m256
     // since matrix is square, the indecies are the same for the transpose 
+    cout << in_matrix_cpp[0][0] << endl;
     for(uint vert = 0; vert < matrix_size; vert++){
         for(uint horiz = 0; horiz < num_of_regs; horiz++){
             // looping through each element in register and checking if it exists
             //cout << "vert " << vert << " horiz " << horiz << endl; 
-            vector<int> temp_vector;
-            vector<short int> temp_vector_transpose;
+            short int temp_vector[matrix_size];
+            short int temp_vector_transpose[matrix_size];
+            //vector<int> temp_vector;
+            //vector<short int> temp_vector_transpose;
             for(uint reg_i = 0; reg_i < 8; reg_i++){
                 uint real_i = horiz*8 + reg_i;
+                
                 //cout << real_i << " ";
                 if(real_i < matrix_size){
-                    temp_vector.push_back(in_matrix_cpp[vert][real_i]);
-                    temp_vector_transpose.push_back(in_matrix_cpp_transpose[vert][real_i]);
+                    //cout << in_matrix_cpp[vert][real_i] << endl;
+                    temp_vector[reg_i] = in_matrix_cpp[vert][real_i];
+                    //temp_vector[0] = 0;
+                    temp_vector_transpose[reg_i] = in_matrix_cpp_transpose[vert][real_i];
+                    //temp_vector.push_back(in_matrix_cpp[vert][real_i]);
+                    //temp_vector_transpose.push_back(in_matrix_cpp_transpose[vert][real_i]);
+                    
                     if(print_transpose){
                         cout << left << setfill(' ') << setw(11);
                         cout << in_matrix_cpp[vert][real_i];
@@ -265,8 +284,10 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
                     }
                 }
                 else{
-                    temp_vector.push_back(0);
-                    temp_vector_transpose.push_back(0);
+                    temp_vector[reg_i] = 0;
+                    temp_vector_transpose[reg_i] = 0;
+                    // temp_vector.push_back(0);
+                    // temp_vector_transpose.push_back(0);
                     if(print_transpose){
                         cout << left << setfill(' ') << setw(11);
                         cout << " 0 ";
@@ -341,24 +362,29 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
 
                 // need pointers to access data so its not garbage 
                 int* row = (int*) &in_matrix_avx[vert][horiz];
-                int* row_t = (int*) &in_matrix_avx_transpose[vert][horiz];
+                int* row_t = (int*) &in_matrix_avx_transpose[vert_t][horiz];
 
                 __m256i rowaa = _mm256_setr_epi32(row[0],0,row[1],0,
                                                   row[2],0,row[3],0);
                 __m256i rowab = _mm256_setr_epi32(row[4],0,row[5],0,
                                                   row[6],0,row[7],0);
-                //__m256i row_t = in_matrix_avx_transpose[vert_t][horiz];
                 __m256i rowba = _mm256_setr_epi32(row_t[0],0,row_t[1],0,
                                                   row_t[2],0,row_t[3],0);
                 __m256i rowbb = _mm256_setr_epi32(row_t[4],0,row_t[5],0,
                                                   row_t[6],0,row_t[7],0);
-                //__m256i res = _mm256_mul_epi32(in_matrix_avx[vert][horiz],in_matrix_avx_transpose[vert_t][horiz]);
-                //int* result = (int*) &res;
                 __m256i resa = _mm256_mul_epi32(rowaa,rowba);
                 __m256i resb = _mm256_mul_epi32(rowab,rowbb);
-                if( (vert==0) &&(horiz==1) ){
 
-                
+                // need to use some pointer trickery to access the values stored within the resulting __m256i. 
+                // __m256i in this case stores 4 values which are encoded (or maybe are ram locations) which need to be in readable form
+                int* resa_readable = (int*) &resa;
+                int* resb_readable = (int*) &resb;
+                sum += resa_readable[0] + resa_readable[2] + resa_readable[4] + resa_readable[6];
+                sum += resb_readable[0] + resb_readable[2] + resb_readable[4] + resb_readable[6];
+
+                /* Needed debugging, please don't delete. was a pain to make. 
+                if( (vert==0) &&(vert_t==1) ){
+                    cout << endl;
                     int* j = (int*) &rowaa;
                     printf("rowaa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7]);
                     int* x = (int*) &rowab;
@@ -386,23 +412,9 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
                     int* l = (int*) &resb;
                     //printf("resb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7]);
                     sum += k[0] + k[2] + k[4] + k[6];
-                sum += l[0] + l[2] + l[4] + l[6];
+                    sum += l[0] + l[2] + l[4] + l[6];
                 }
-                /*
-                // Signed 32-bit integer multiplication (AVX2)
-                __m256i epi32_vec_0 = _mm256_setr_epi32(2, 2, 3, 3, 4, 4, 5, 5);
-                __m256i epi32_vec_1 = _mm256_setr_epi32(8, 8, 9, 9, 10, 10, 11, 11);
-                __m256i epi32_result = _mm256_mul_epi32(epi32_vec_0, epi32_vec_1);
-                int* i = (int*) &epi32_result;
-                printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
                 */
-
-                //cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " ";
-                //cout << res[4] << " " << res[5] << " " << res[6] << " " << res[7] << " ";
-                //cout << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " ";
-                //cout << result[4] << " " << result[5] << " " << result[6] << " " << result[7] << " ";
-                
-                // need to add output
                 
             }
             if(print_output){
@@ -525,7 +537,42 @@ int main(int argc, char* argv[]){
         // [(x x x x x x x x) (x x x x x x 0 0)] <- two 8 float registers | two vectors down 
         // [(x x x x x x x x) (x x x x x x 0 0)]                          |
         //                  ^ one vectotr wide 
+        // cout << "input matrix: " << endl;
+        // cout << endl;
+        // output << "input matrix: " << endl;
+        // output << endl;
+        // print_cpp(output, in_matrix_cpp);
+
+        // cout << "transpose matrix: " << endl;
+        // cout << endl;
+        // output << "transpose matrix: " << endl;
+        // output << endl;
+        // print_cpp(output, in_matrix_cpp_transpose);
+
+        // cout << "squaring results using cpp: " << endl;
+        // cout << endl;
+        // output << "squaring results using cpp: " << endl;
+        // output << endl;
+
+        long long start1 = time(NULL);
+        multiply_cpp(output, in_matrix_cpp,out_matrix_cpp,false);
+        //multiply_cpp(output, in_matrix_cpp,out_matrix_cpp,true);
+        long long end1 = time(NULL);
+        cout << "cpp multiplication took: " << end1 - start1 << endl;
+        /*
+        cout << "squaring results using avx: " << endl;
+        cout << endl;
+        output << "squaring results using avx: " << endl;
+        output << endl;
+        */
+        long long start2 = time(NULL);
+        cout << in_matrix_cpp[0][0] << endl;
+        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,false);
+        //multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
+        long long end2 = time(NULL);
+        cout << "avx multiplication took: " << end2 - start2 << endl;
         
+        /*
         cout << "input matrix: " << endl;
         cout << endl;
         output << "input matrix: " << endl;
@@ -549,6 +596,7 @@ int main(int argc, char* argv[]){
         output << "squaring results using avx: " << endl;
         output << endl;
         multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
+        */
     }
     else if( (numtype == "fixed") && (numsize == 2) ){
     
@@ -575,7 +623,7 @@ int main(int argc, char* argv[]){
         }
         // transpose in matrix for computation in avx multiply 
         transpose(in_matrix_cpp,in_matrix_cpp_transpose);
-    
+        
         // construct __m256 matrix
         // need to pad with 0's at the end if not perfectly divisable 
         // looping through the required registers 
@@ -583,29 +631,40 @@ int main(int argc, char* argv[]){
         // [(x x x x x x x x) (x x x x x x 0 0)]                          |
         //                  ^ one vectotr wide 
         
-        cout << "input matrix: " << endl;
-        cout << endl;
-        output << "input matrix: " << endl;
-        output << endl;
-        print_cpp(output, in_matrix_cpp);
+        // cout << "input matrix: " << endl;
+        // cout << endl;
+        // output << "input matrix: " << endl;
+        // output << endl;
+        // print_cpp(output, in_matrix_cpp);
 
-        cout << "transpose matrix: " << endl;
-        cout << endl;
-        output << "transpose matrix: " << endl;
-        output << endl;
-        print_cpp(output, in_matrix_cpp_transpose);
+        // cout << "transpose matrix: " << endl;
+        // cout << endl;
+        // output << "transpose matrix: " << endl;
+        // output << endl;
+        // print_cpp(output, in_matrix_cpp_transpose);
 
-        cout << "squaring results using cpp: " << endl;
-        cout << endl;
-        output << "squaring results using cpp: " << endl;
-        output << endl;
-        multiply_cpp(output, in_matrix_cpp,out_matrix_cpp,true);
+        // cout << "squaring results using cpp: " << endl;
+        // cout << endl;
+        // output << "squaring results using cpp: " << endl;
+        // output << endl;
 
+        long long start1 = time(NULL);
+        multiply_cpp(output, in_matrix_cpp,out_matrix_cpp,false);
+        //multiply_cpp(output, in_matrix_cpp,out_matrix_cpp,true);
+        long long end1 = time(NULL);
+        cout << "cpp multiplication took: " << end1 - start1 << endl;
+        /*
         cout << "squaring results using avx: " << endl;
         cout << endl;
         output << "squaring results using avx: " << endl;
         output << endl;
-        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
+        */
+        long long start2 = time(NULL);
+        cout << in_matrix_cpp[0][0] << endl;
+        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,false);
+        //multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
+        long long end2 = time(NULL);
+        cout << "avx multiplication took: " << end2 - start2 << endl;
     }
     else{
         cout << "funcitonality not added yet" << endl;

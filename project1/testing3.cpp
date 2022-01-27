@@ -113,9 +113,15 @@ int main(int argc, char* argv[]){
     //cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " ";
     //cout << res[4] << " " << res[5] << " " << res[6] << " " << res[7] << " ";
     //int* i = (int*) &epi32_result;
-    printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
+    //printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
     //cout << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " ";
     //cout << result[4] << " " << result[5] << " " << result[6] << " " << result[7] << " ";
+
+    time_t timer;
+    double seconds;
+    long long abc = time(NULL);
+    cout << time(NULL) << endl;
+
 
     return 0;
 };

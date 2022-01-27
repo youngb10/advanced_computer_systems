@@ -1,22 +1,3 @@
 Inputs Accepted!
-matrix size: 2 x 2
-number type fixed 2 bytes 
-input matrix: 
-
-69         35         
--103       72         
-
-transpose matrix: 
-
-69         -103       
-35         72         
-
-squaring results using cpp: 
-
-1156       4935       
--14523     1579       
-
-squaring results using avx: 
-
-1156       1156       
-1579       1579       
+matrix size: 500 x 500
+number type float 4 bytes 
