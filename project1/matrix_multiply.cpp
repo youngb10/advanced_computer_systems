@@ -15,6 +15,9 @@ using namespace std;
     // https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#ig_expand=5051,5042,4936,4956&techs=AVX&text=mult
     // https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#ig_expand=5051,5042,4936,4956,6144&techs=AVX&text=set_ps
     // https://chryswoods.com/vector_c++/immintrin.html
+    
+    // VERY useful link to initializing intel intrinsics 
+    // https://github.com/Triple-Z/AVX-AVX2-Example-Code#initialization-intrinsics
 
 /* in launch
  to compile: g++ -mavx -Wall -g matrix_multiply.cpp -o matrix_multiply.out
@@ -235,16 +238,18 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
     // set print_transpose or print_output to true for printing 
     uint matrix_size = in_matrix_cpp.size();
     uint num_of_regs = ceil(matrix_size/8.0);
-    __m256i in_matrix_avx [matrix_size][num_of_regs];
-    __m256i out_matrix_avx [matrix_size][num_of_regs];
-    __m256i in_matrix_avx_transpose [matrix_size][num_of_regs];
+    // need to double so that it can be multiplied
+    // very hacky, not sure why this does what it does
+    __m256i in_matrix_avx [matrix_size][num_of_regs*2];
+    __m256i out_matrix_avx [matrix_size][num_of_regs*2];
+    __m256i in_matrix_avx_transpose [matrix_size][num_of_regs*2];
     // take input matrix (vector form) and create the vectorized version using __m256
     // since matrix is square, the indecies are the same for the transpose 
     for(uint vert = 0; vert < matrix_size; vert++){
         for(uint horiz = 0; horiz < num_of_regs; horiz++){
             // looping through each element in register and checking if it exists
             //cout << "vert " << vert << " horiz " << horiz << endl; 
-            vector<short int> temp_vector;
+            vector<int> temp_vector;
             vector<short int> temp_vector_transpose;
             for(uint reg_i = 0; reg_i < 8; reg_i++){
                 uint real_i = horiz*8 + reg_i;
@@ -270,11 +275,50 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
                     }
                 }
             }
+            // Signed 32-bit integer multiplication (AVX2)
+            //__m256i epi32_vec_0 = _mm256_setr_epi32(69, 35, 0, 0, 0, 0, 0, 0);
+            //__m256i epi32_vec_1 = _mm256_setr_epi32(8, 8, 9, 9, 10, 10, 11, 11);
+            //__m256i epi32_result = _mm256_mul_epi32(epi32_vec_0, epi32_vec_1);
+            //int* i = (int*) &epi32_result;
+            //printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
+            /*int arr[8];
+            arr[0] = 69;
+            arr[1] = 35;
+            arr[2] = 0;
+            arr[3] = 0;
+            arr[4] = 0;
+            arr[5] = 0;
+            arr[6] = 0; 
+            arr[7] = 0;
+            int arr2[8];
+            arr2[0] = 69;
+            arr2[1] = -103;
+            arr2[2] = 0;
+            arr2[3] = 0;
+            arr2[4] = 0;
+            arr2[5] = 0;
+            arr2[6] = 0; 
+            arr2[7] = 0;
+            //copy(temp_vector.begin(),temp_vector.end(),arr);
+            __m256i row = _mm256_set_epi32(arr[7],arr[6],arr[5],arr[4],
+                                             arr[3],arr[2],arr[1],arr[0]);
+            cout << endl; cout << typeid(temp_vector[7]).name() << endl;
+            __m256i row1 = _mm256_setr_epi32(69, 35, 0, 0, 0, 0, 0, 0);
+            __m256i row_t = _mm256_set_epi32(arr2[7],arr2[6],arr2[5],arr2[4],
+                                             arr2[3],arr2[2],arr2[1],arr2[0]);
+            int* store_row = (int*) &row;
+            int* store_row_t = (int*) &row_t;
+            
+            in_matrix_avx[vert][horiz] = row;
+            in_matrix_avx_transpose[vert][horiz] =row_t;
+            */
             // issue
-            *(*(in_matrix_avx + vert) + horiz) = _mm256_set_epi32(temp_vector[7],temp_vector[6],temp_vector[5],temp_vector[4],
+            
+            in_matrix_avx[vert][horiz] = _mm256_set_epi32(temp_vector[7],temp_vector[6],temp_vector[5],temp_vector[4],
                                                                   temp_vector[3],temp_vector[2],temp_vector[1],temp_vector[0]);
-            *(*(in_matrix_avx_transpose + vert) + horiz) = _mm256_set_epi32(temp_vector_transpose[7],temp_vector_transpose[6],temp_vector_transpose[5],temp_vector_transpose[4],
+            in_matrix_avx_transpose[vert][horiz] = _mm256_set_epi32(temp_vector_transpose[7],temp_vector_transpose[6],temp_vector_transpose[5],temp_vector_transpose[4],
                                                                              temp_vector_transpose[3],temp_vector_transpose[2],temp_vector_transpose[1],temp_vector_transpose[0]);
+            
         };
         if(print_transpose){
             cout << endl;
@@ -294,26 +338,70 @@ void multiply_avx(ofstream &output, vector<vector<short int>> & in_matrix_cpp, v
             for(uint horiz = 0; horiz < num_of_regs; horiz++){
                 // multiply every register in in matrix with every register in in matrix transpose
                 // then sum together and put into output matrix 
+
+                // need pointers to access data so its not garbage 
+                int* row = (int*) &in_matrix_avx[vert][horiz];
+                int* row_t = (int*) &in_matrix_avx_transpose[vert][horiz];
+
+                __m256i rowaa = _mm256_setr_epi32(row[0],0,row[1],0,
+                                                  row[2],0,row[3],0);
+                __m256i rowab = _mm256_setr_epi32(row[4],0,row[5],0,
+                                                  row[6],0,row[7],0);
+                //__m256i row_t = in_matrix_avx_transpose[vert_t][horiz];
+                __m256i rowba = _mm256_setr_epi32(row_t[0],0,row_t[1],0,
+                                                  row_t[2],0,row_t[3],0);
+                __m256i rowbb = _mm256_setr_epi32(row_t[4],0,row_t[5],0,
+                                                  row_t[6],0,row_t[7],0);
+                //__m256i res = _mm256_mul_epi32(in_matrix_avx[vert][horiz],in_matrix_avx_transpose[vert_t][horiz]);
+                //int* result = (int*) &res;
+                __m256i resa = _mm256_mul_epi32(rowaa,rowba);
+                __m256i resb = _mm256_mul_epi32(rowab,rowbb);
+                if( (vert==0) &&(horiz==1) ){
+
                 
-                // have to convert ints to floats to multiply. 
-                // for whatever reason, there is no integer multiplication in avx
-                // __m256i _mm256_set_epi32 (int e7, int e6, int e5, int e4, int e3, int e2, int e1, int e0);
-                //__m256i _mm256_set_epi16 (short e15, short e14, short e13, short e12, 
-                //                          short e11, short e10, short e9, short e8, 
-                //                          short e7, short e6, short e5, short e4, 
-                //                          short e3, short e2, short e1, short e0)
-                // below should work 
-                //__m256i _mm256_mulhi_epi16 (__m256i a, __m256i b)
-                //__m256i _mm256_mullo_epi16 (__m256i a, __m256i b)
-                
-                // __m256i _mm256_mullo_epi32 (__m256i a, __m256i b)
-                __m256i result = _mm256_mullo_epi32(in_matrix_avx[vert][horiz],in_matrix_avx_transpose[vert_t][horiz]);
-                
-                //cout << result_flt[0] << " " << result_flt[1] << " " << result_flt[2] << " " << result_flt[3] << " ";
-                //cout << result_flt[4] << " " << result_flt[5] << " " << result_flt[6] << " " << result_flt[7] << " ";
-                for(uint i = 0; i < 8; i++){
-                    sum += result[i];
+                    int* j = (int*) &rowaa;
+                    printf("rowaa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7]);
+                    int* x = (int*) &rowab;
+                    printf("rowab:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
+                    int* y = (int*) &rowba;
+                    printf("rowba:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]);
+                    int* z = (int*) &rowbb;
+                    printf("rowbb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", z[0], z[1], z[2], z[3], z[4], z[5], z[6], z[7]);
+                    int* k = (int*) &resa;
+                    printf("resa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7]);
+                    int* l = (int*) &resb;
+                    printf("resb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7]);
                 }
+                else{
+                    int* j = (int*) &rowaa;
+                    //printf("rowaa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7]);
+                    int* x = (int*) &rowab;
+                    //printf("rowab:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
+                    int* y = (int*) &rowba;
+                    //printf("rowba:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]);
+                    int* z = (int*) &rowbb;
+                    //printf("rowbb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", z[0], z[1], z[2], z[3], z[4], z[5], z[6], z[7]);
+                    int* k = (int*) &resa;
+                    //printf("resa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7]);
+                    int* l = (int*) &resb;
+                    //printf("resb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7]);
+                    sum += k[0] + k[2] + k[4] + k[6];
+                sum += l[0] + l[2] + l[4] + l[6];
+                }
+                /*
+                // Signed 32-bit integer multiplication (AVX2)
+                __m256i epi32_vec_0 = _mm256_setr_epi32(2, 2, 3, 3, 4, 4, 5, 5);
+                __m256i epi32_vec_1 = _mm256_setr_epi32(8, 8, 9, 9, 10, 10, 11, 11);
+                __m256i epi32_result = _mm256_mul_epi32(epi32_vec_0, epi32_vec_1);
+                int* i = (int*) &epi32_result;
+                printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
+                */
+
+                //cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " ";
+                //cout << res[4] << " " << res[5] << " " << res[6] << " " << res[7] << " ";
+                //cout << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " ";
+                //cout << result[4] << " " << result[5] << " " << result[6] << " " << result[7] << " ";
+                
                 // need to add output
                 
             }
@@ -517,7 +605,7 @@ int main(int argc, char* argv[]){
         cout << endl;
         output << "squaring results using avx: " << endl;
         output << endl;
-        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,true,true);
+        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
     }
     else{
         cout << "funcitonality not added yet" << endl;
