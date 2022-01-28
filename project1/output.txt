@@ -1,3 +1,6 @@
 Inputs Accepted!
-matrix size: 5000 x 5000
-number type fixed 2 bytes 
+matrix size: 2 x 2
+number type float 4 bytes 
+1.01476    0.646247   
+1.28321    0.946347   
+
