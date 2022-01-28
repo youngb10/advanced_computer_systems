@@ -14,8 +14,15 @@ __m256 _mm256_set1_ps(float a);
 __m256 _mm256_set_ps (float e7, float e6, float e5, float e4, float e3, float e2, float e1, float e0);
 __m256 _mm256_mul_ps (__m256 a, __m256 b);
 
-void testfn(ofstream &output){
-    output << "abcd" << endl;
+void testfn(ofstream &output, int** ptr, int size1, int size2){
+
+    for(int i = 0; i < size1; i++){
+        for(int j = 0; j < size2; j++){
+            cout << *(*(ptr+i)+j) << " " ;
+
+        }
+        cout << endl;
+    }
 }
 
 int main(int argc, char* argv[]){
@@ -31,7 +38,7 @@ int main(int argc, char* argv[]){
         std::cerr << "Can't open the output.txt file: " << argv[1] << " ; please try again" << std::endl;
         exit(true);
     }
-    testfn(output);
+    
     int vert = 10;
     int horiz = 10;
     //__m256 (**arr2)[vert][horiz];
@@ -81,35 +88,35 @@ int main(int argc, char* argv[]){
     //int* i = (int*) &epi32_result;
     //printf("int:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]);
 
-    int arr[8];
-    arr[0] = 69;
-    arr[1] = 25;
-    arr[2] = 0;
-    arr[3] = 0;
-    arr[4] = 0;
-    arr[5] = 0;
-    arr[6] = 0; 
-    arr[7] = 0;
-    int arr2[8];
-    arr2[0] = 69;
-    arr2[1] = -103;
-    arr2[2] = 0;
-    arr2[3] = 0;
-    arr2[4] = 0;
-    arr2[5] = 0;
-    arr2[6] = 0; 
-    arr2[7] = 0;
+    // int arr[8];
+    // arr[0] = 69;
+    // arr[1] = 25;
+    // arr[2] = 0;
+    // arr[3] = 0;
+    // arr[4] = 0;
+    // arr[5] = 0;
+    // arr[6] = 0; 
+    // arr[7] = 0;
+    // int arr2[8];
+    // arr2[0] = 69;
+    // arr2[1] = -103;
+    // arr2[2] = 0;
+    // arr2[3] = 0;
+    // arr2[4] = 0;
+    // arr2[5] = 0;
+    // arr2[6] = 0; 
+    // arr2[7] = 0;
     //copy(temp_vector.begin(),temp_vector.end(),arr);
-    __m256i row = _mm256_setr_epi32(arr[7],arr[6],arr[5],arr[4],
-                                        arr[3],arr[2],arr[1],arr[0]);
-    __m256i row_t = _mm256_setr_epi32(arr2[7],arr2[6],arr2[5],arr2[4],
-                                        arr2[3],arr2[2],arr2[1],arr2[0]);
-    __m256i row1 = _mm256_setr_epi32(69, 0, 35, 0, 0, 0, 0, 0);
-    __m256i row2 = _mm256_setr_epi32(69, 0, -103, 0, 0, 0, 0, 0);
+    // __m256i row = _mm256_setr_epi32(arr[7],arr[6],arr[5],arr[4],
+    //                                     arr[3],arr[2],arr[1],arr[0]);
+    // __m256i row_t = _mm256_setr_epi32(arr2[7],arr2[6],arr2[5],arr2[4],
+    //                                     arr2[3],arr2[2],arr2[1],arr2[0]);
+    // __m256i row1 = _mm256_setr_epi32(69, 0, 35, 0, 0, 0, 0, 0);
+    // __m256i row2 = _mm256_setr_epi32(69, 0, -103, 0, 0, 0, 0, 0);
     //int* store_row = (int*) &row;
     //int* store_row_t = (int*) &row_t;
-    __m256i res = _mm256_mul_epi32(row1,row2);
-    int* i = (int*) &res;
+    // __m256i res = _mm256_mul_epi32(row1,row2);
+    // int* i = (int*) &res;
     //cout << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " ";
     //cout << res[4] << " " << res[5] << " " << res[6] << " " << res[7] << " ";
     //int* i = (int*) &epi32_result;
@@ -122,6 +129,27 @@ int main(int argc, char* argv[]){
     long long abc = time(NULL);
     cout << time(NULL) << endl;
 
+    // void processArr(int **a) {
+    // // Do Something
+    // }
+    // // When calling:
+    // int **array;
+    // array = new int *[10];
+    // for(int i = 0; i <10; i++)
+    //  array[i] = new int[10];
+    // processArr(array);
+
+    int array[100][10];
+    int** arr2;
+    arr2 = new int* [100];
+    for(int i = 0; i < 100; i++){
+        arr2[i] = new int[10];
+        for(int j = 0; j < 10; j++){
+            *(*(arr2+i)+j) = 10*j;
+        }
+        
+    }
+    testfn(output,arr2,100,10);
 
     return 0;
 };
