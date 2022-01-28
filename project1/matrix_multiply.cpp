@@ -1,12 +1,14 @@
-
+#include <malloc.h>
 #include <iostream>
-#include <iomanip> // setw
+#include <iomanip>        // setw
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <fstream>     // input output files
-#include <immintrin.h> // avx stuff
-#include <cmath> // floor
+#include <ctime>          // Timekeeping
+#include <ratio>          // Timekeeping
+#include <chrono>         // Timekeeping
+#include <fstream>        // input output files
+#include <immintrin.h>    // avx stuff
+#include <cmath>          // for floor
 #ifdef __GNUC__
   #define ALIGN(x) x __attribute__((aligned(32)))
 #elif defined(_MSC_VER)
@@ -14,6 +16,9 @@
 #endif
 
 using namespace std;
+using std::chrono::high_resolution_clock;
+using std::chrono::time_point;
+using std::chrono::duration;
 
 // Useful Links:
 // https://www.cs.fsu.edu/~engelen/courses/HPC-adv/intref_cls.pdf
@@ -27,7 +32,7 @@ using namespace std;
 // VERY useful for optimization
 // https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 /* in launch
- to compile:  g++ -mavx2 -Wall -O1 -g matrix_multiply.cpp -o matrix_multiply.out
+ to compile:  g++ -mavx2 -Wall -O3 -g matrix_multiply.cpp -o matrix_multiply.out
  to run: ./matrix_multiply.out inputs.txt output.txt
  "args": [
                 "inputs.txt",
@@ -42,23 +47,6 @@ using namespace std;
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
 */
-
-// external avx library functions
-// float versions
-__m256 _mm256_set1_ps(float a);
-__m256 _mm256_set_ps(float e7, float e6, float e5, float e4, float e3, float e2, float e1, float e0);
-__m256 _mm256_mul_ps(__m256 a, __m256 b);
-void _mm256_storeu_ps(float *mem_addr, __m256 a);
-
-// integer versions
-__m256i _mm256_set_epi32(int e7, int e6, int e5, int e4, int e3, int e2, int e1, int e0);
-__m256i _mm256_mullo_epi32(__m256i a, __m256i b);
-void _mm256_store_si256(__m256i *mem_addr, __m256i a);
-// can upgrade to short int version, but will require some more code modification
-__m256 _mm256_castsi256_ps(__m256i a);
-__m256i _mm256_castps_si256(__m256 a);
-__m256i _mm256_setr_epi32(int e7, int e6, int e5, int e4, int e3, int e2, int e1, int e0);
-void _mm256_storeu_si256(__m256i *mem_addr, __m256i a);
 
 // my function prototypes (will be using overloading)
 float get_float();
@@ -76,6 +64,10 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
 
 void multiply_cpp(ofstream &output, short int **in_matrix_cpp, int **out_matrix_cpp, uint matrix_size, bool print_output);
 void multiply_cpp(ofstream &output, short int **in_matrix_cpp, int **out_matrix_cpp, uint matrix_size, bool print_output);
+
+static inline __m256 hsums(__m256 const& v);
+static inline float hadd(__m256 const& v);
+uint hsum_8x32(__m256i v);
 
 float get_float()
 {
@@ -178,45 +170,19 @@ void multiply_avx(ofstream &output, float **in_matrix_cpp, float **in_matrix_cpp
     // using transpose to minimize cache misses
     // only works on square matrices
     // set print_transpose or print_output to true for printing
-    
-    uint num_of_regs = ceil(matrix_size / 8.0);
-    
-    alignas(32) __m256 **in_matrix_avx;
-    alignas(32) __m256 **in_matrix_avx_transpose;
-    
-    in_matrix_avx = new __m256 *[matrix_size];
-    in_matrix_avx_transpose = new __m256 *[matrix_size];
-    //__m256 in_matrix_avxa[matrix_size][num_of_regs] __attribute__((aligned(64)));
-    //__m256 in_matrix_avx_transposea[matrix_size][num_of_regs] __attribute__((aligned(64)));
-    
-    //alignas(32) __m256 in_matrix_avxa[matrix_size][num_of_regs];
-    //alignas(32) __m256 in_matrix_avx_transposea[matrix_size][num_of_regs];
-    //alignas(32) float in_matrix_avxa[matrix_size][matrix_size+8];
-    //alignas(32) float in_matrix_avx_transposea[matrix_size][matrix_size+8];
-
-    // myPointer = new int;
-    // delete myPointer; //freed memory
-    // myPointer = NULL; //pointed dangling ptr to NULL
+    uint num_of_regs = ceil(matrix_size / 8.0);  
+    alignas(32) __m256 in_matrix_avxa[matrix_size][num_of_regs];
+    alignas(32) __m256 in_matrix_avx_transposea[matrix_size][num_of_regs];
 
     // take input matrix (vector form) and create the vectorized version using __m256
     // since matrix is square, the indecies are the same for the transpose
     for (uint vert = 0; vert < matrix_size; vert++)
     {   // need to double reg size because only half of the data is multiplied at once 
-        in_matrix_avx_transpose[vert] = new __m256[num_of_regs*2];
-        in_matrix_avx[vert] = new  __m256[num_of_regs*2];
-        
-        //out_matrix_avx[vert] = new __m256i[num_of_regs*2];
         for (uint horiz = 0; horiz < num_of_regs; horiz++)
         {
             // looping through each element in register and checking if it exists
-            //float *temp1;
-            //temp1 = new float[8];
-            //float*temp1_t;
-            //temp1_t = new float[8];
             static ALIGN(float temp1[8]);
             static ALIGN(float temp1_t[8]);
-            //alignas(64) float temp1[8];
-            //alignas(64) float temp1_t[8];
             for (uint reg_i = 0; reg_i < 8; reg_i++)
             {
                 uint real_i = horiz * 8 + reg_i;
@@ -235,8 +201,8 @@ void multiply_avx(ofstream &output, float **in_matrix_cpp, float **in_matrix_cpp
                 }
                 else
                 {
-                    temp1[reg_i] = 0;
-                    temp1_t[reg_i] = 0;
+                    temp1[reg_i] = 0.0;
+                    temp1_t[reg_i] = 0.0;
                     if (print_transpose)
                     {
                         cout << left << setfill(' ') << setw(11);
@@ -246,40 +212,10 @@ void multiply_avx(ofstream &output, float **in_matrix_cpp, float **in_matrix_cpp
                     }
                 }
             }
-            // float* aligned_floats = (float*)aligned_alloc(32, 64 * sizeof(float));
-            // ... Initialize data ...
-            // __m256 vec = _mm256_load_ps(aligned_floats);
-            
-            __m256 A __attribute__((aligned(32)));
-            A = _mm256_set_ps(temp1[7], temp1[6], temp1[5], temp1[4], temp1[3], temp1[2], temp1[1], temp1[0]);
-            in_matrix_avx[vert][horiz] = A;
-            __m256 B __attribute__((aligned(32)));
-            B = _mm256_set_ps(temp1_t[7], temp1_t[6], temp1_t[5], temp1_t[4], temp1_t[3], temp1_t[2], temp1_t[1], temp1_t[0]);
-            in_matrix_avx_transpose[vert][horiz] = B;
-            //static ALIGN(float a[8]) = {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f};
-            //_mm256_stream_ps(a,in_matrix_avx[vert][horiz]);
-            //float* aligned_floats = (float*)aligned_alloc(32, 64 * sizeof(float));
-            //*(*(in_matrix_avxa+vert)+horiz) = _mm256_load_ps(aligned_floats);
-            
-            //void _mm256_stream_ps (float * mem_addr, __m256 a)
-            //_mm256_stream_ps(a,in_matrix_avxa[vert][horiz]);
-            //_mm256_stream_ps(a,in_matrix_avx_transposea[vert][horiz]);
-            //*(*(in_matrix_avxa+vert)+horiz) = _mm256_setr_ps(temp1[7], temp1[6], temp1[5], temp1[4], temp1[3], temp1[2], temp1[1], temp1[0]);
-            //*(*(in_matrix_avx_transposea+vert)+horiz) = _mm256_setr_ps(temp1_t[7], temp1_t[6], temp1_t[5], temp1_t[4], temp1_t[3], temp1_t[2], temp1_t[1], temp1_t[0]);
-            // __m256i temp_reg = _mm256_set_epi32(temp1[7], temp1[6], temp1[5], temp1[4], temp1[3], temp1[2], temp1[1], temp1[0]);
-            // __m256i *ptr =(__m256i*) &*(*(in_matrix_avx+vert)+horiz);
-            // _mm256_storeu_si256(ptr,temp_reg);
-            // __m256i temp_reg_t = _mm256_set_epi32(temp1_t[7], temp1_t[6], temp1_t[5], temp1_t[4], temp1_t[3], temp1_t[2], temp1_t[1], temp1_t[0]);
-            // __m256i *ptr_t =(__m256i*) &*(*(in_matrix_avx_transpose+vert)+horiz);
-            // _mm256_storeu_si256(ptr_t,temp_reg_t);
+            // seg fault here with large matrices. Can't figure out the issue. Neither could prof.             
+            in_matrix_avxa[vert][horiz] = _mm256_loadu_ps(temp1);
+            in_matrix_avx_transposea[vert][horiz] = _mm256_loadu_ps(temp1_t);
 
-            //__m256 _mm256_loadu_ps (float const * mem_addr)
-            //*(*(in_matrix_avxa+vert)+horiz) = _mm256_loadu_ps(temp1);
-            //*(*(in_matrix_avx_transposea+vert)+horiz) = _mm256_loadu_ps(temp1_t);
-            //delete temp1;
-            //temp1 = NULL;
-            //delete temp1_t;
-            //temp1_t = NULL;
         };
         if (print_transpose)
         {
@@ -292,23 +228,27 @@ void multiply_avx(ofstream &output, float **in_matrix_cpp, float **in_matrix_cpp
     //cout << " the transpose has been processed " << endl;
     // compute the multiplication using in_matrix and in_matrix_transpose
     // must loop through all rows of first matrix
+    float sum = 0;
+    __m256 vector_sum = _mm256_set_ps(0, 0, 0, 0, 0, 0, 0, 0);
     for (uint vert = 0; vert < matrix_size; vert++)
     {
         // must loop through all rows of second matrix
         for (uint vert_t = 0; vert_t < matrix_size; vert_t++)
         {
-            float sum = 0.0;
+            vector_sum = _mm256_set_ps(0, 0, 0, 0, 0, 0, 0, 0);
             // only need to loop through columns once because the indecies must be aligned
             for (uint horiz = 0; horiz < num_of_regs; horiz++)
             {
                 // multiply every register in in matrix with every register in in matrix transpose
                 // then sum together and put into output matrix
 
-                //__m256 result = _mm256_mul_ps(in_matrix_avxa[vert][horiz],in_matrix_avx_transposea[vert_t][horiz]);
+                __m256 mulresult = _mm256_mul_ps(in_matrix_avxa[vert][horiz],in_matrix_avx_transposea[vert_t][horiz]);
                 //cout << " " << result[0] << " "<< result[1] << " " << result[2] << " "<< result[3]<< " "<< result[4]<< " "<< result[5] << " "<< result[6] << " "<< result[7] << endl;
                 //sum += result[0] + result[1] + result[2] + result[3] + result[4] + result[5] + result[6] + result[7];
-                
+                // Horizontally sums the multiplied register, adds to the output
+                vector_sum = _mm256_add_ps(vector_sum, mulresult);
             }
+            sum = hadd(vector_sum);
             if (print_output)
             {
                 cout << left << setfill(' ') << setw(11);
@@ -410,6 +350,8 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
         }
     };
     cout << " the transpose has been processed " << endl;
+    //short int sum2 = 0;
+    //__m256i vector_sum = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, 0);
     // compute the multiplication using in_matrix and in_matrix_transpose
     // must loop through all rows of first matrix
     for (uint vert = 0; vert < matrix_size; vert++)
@@ -418,12 +360,14 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
         for (uint vert_t = 0; vert_t < matrix_size; vert_t++)
         {
             int sum = 0;
+            //vector_sum = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, 0);
             // only need to loop through columns once because the indecies must be aligned
             for (uint horiz = 0; horiz < num_of_regs; horiz++)
             {
                 // multiply every register in in matrix with every register in in matrix transpose
                 // then sum together and put into output matrix
-
+                //__m256i mulresult = _mm256_mullo_epi32(in_matrix_avx[vert][horiz], in_matrix_avx_transpose[vert_t][horiz]);
+                //vector_sum = _mm256_add_epi32(vector_sum, mulresult);
                 // need pointers to access data so its not garbage
                 int *row = (int *)&in_matrix_avx[vert][horiz];
                 int *row_t = (int *)&in_matrix_avx_transpose[vert_t][horiz];
@@ -446,41 +390,8 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
                 sum += resa_readable[0] + resa_readable[2] + resa_readable[4] + resa_readable[6];
                 sum += resb_readable[0] + resb_readable[2] + resb_readable[4] + resb_readable[6];
 
-                /*
-                // Needed debugging, please don't delete. was a pain to make.
-                if( true ){
-                    cout << endl;
-                    int* j = (int*) &rowaa;
-                    printf("rowaa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7]);
-                    int* x = (int*) &rowab;
-                    printf("rowab:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
-                    int* y = (int*) &rowba;
-                    printf("rowba:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]);
-                    int* z = (int*) &rowbb;
-                    printf("rowbb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", z[0], z[1], z[2], z[3], z[4], z[5], z[6], z[7]);
-                    int* k = (int*) &resa;
-                    printf("resa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7]);
-                    int* l = (int*) &resb;
-                    printf("resb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7]);
-                }
-                else{
-                    int* j = (int*) &rowaa;
-                    //printf("rowaa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7]);
-                    int* x = (int*) &rowab;
-                    //printf("rowab:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
-                    int* y = (int*) &rowba;
-                    //printf("rowba:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7]);
-                    int* z = (int*) &rowbb;
-                    //printf("rowbb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", z[0], z[1], z[2], z[3], z[4], z[5], z[6], z[7]);
-                    int* k = (int*) &resa;
-                    //printf("resa:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7]);
-                    int* l = (int*) &resb;
-                    //printf("resb:\t\t%d, %d, %d, %d, %d, %d, %d, %d\n", l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7]);
-                    sum += k[0] + k[2] + k[4] + k[6];
-                    sum += l[0] + l[2] + l[4] + l[6];
-                }
-                */
             }
+            //sum2 = hsum_8x32(vector_sum);
             if (print_output)
             {
                 cout << left << setfill(' ') << setw(11);
@@ -547,6 +458,37 @@ void multiply_cpp(ofstream &output, short int **in_matrix_cpp, int **out_matrix_
         print_cpp(output, out_matrix_cpp, matrix_size);
     }
 }
+
+// Obtains the horizontal sum of all floats in a __m256
+static inline __m256 hsums(__m256 const& v)
+{
+    auto x = _mm256_permute2f128_ps(v, v, 1);
+    auto y = _mm256_add_ps(v, x);
+    x = _mm256_shuffle_ps(y, y, _MM_SHUFFLE(2, 3, 0, 1));
+    x = _mm256_add_ps(x, y);
+    y = _mm256_shuffle_ps(x, x, _MM_SHUFFLE(1, 0, 3, 2));
+    return _mm256_add_ps(x, y);
+}
+
+// Uses the hsums function and then obtains the value of the sum as a float
+static inline float hadd(__m256 const& v)
+{
+    return _mm_cvtss_f32(_mm256_castps256_ps128(hsums(v)));
+}
+
+// Obtains the horizontal sum of all ints in a __m256i
+uint32_t hsum_8x32(__m256i v)
+{
+    __m128i sum128 = _mm_add_epi32(
+                 _mm256_castsi256_si128(v),
+                 _mm256_extracti128_si256(v, 1));
+    __m128i hi64  = _mm_unpackhi_epi64(sum128, sum128);           // 3-operand non-destructive AVX lets us save a byte without needing a movdqa
+    __m128i sum64 = _mm_add_epi32(hi64, sum128);
+    __m128i hi32  = _mm_shuffle_epi32(sum64, _MM_SHUFFLE(2, 3, 0, 1));    // Swap the low two elements
+    __m128i sum32 = _mm_add_epi32(sum64, hi32);
+    return _mm_cvtsi128_si32(sum32);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -637,23 +579,25 @@ int main(int argc, char *argv[])
         // output << "squaring results using cpp: " << endl;
         // output << endl;
 
-        long long start1 = time(NULL);
+        high_resolution_clock::time_point start1 = high_resolution_clock::now(); // Starts CPP Time
         //multiply_cpp(output, in_matrix_cpp, out_matrix_cpp, matrix_size, false);
         //multiply_cpp(output,in_matrix_cpp,out_matrix_cpp,matrix_size,false);
-        
-        long long end1 = time(NULL);
-        cout << "cpp multiplication took: " << end1 - start1 << endl;
+        high_resolution_clock::time_point end1 = high_resolution_clock::now();   // Stops CPP Time
+        duration<double, std::milli> t1 = (end1 - start1) / 1000;
+        cout << "cpp multiplication took: " << t1.count() << endl;               // Displays CPP Time
         /*
         cout << "squaring results using avx: " << endl;
         cout << endl;
         output << "squaring results using avx: " << endl;
         output << endl;
         */
-        long long start2 = time(NULL);
-        //multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false);
-        multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,matrix_size,false,false);
-        long long end2 = time(NULL);
-        cout << "avx multiplication took: " << end2 - start2 << endl;
+        high_resolution_clock::time_point start2 = high_resolution_clock::now(); // Starts AVX Time
+        cout << "123" << endl;
+        multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false); // AVX Multiply
+        cout << "abc" << endl;
+        high_resolution_clock::time_point end2 = high_resolution_clock::now();   // Stops AVX Time
+        duration<double, std::milli> t2 = (end2 - start2) / 1000;
+        cout << "avx multiplication took: " << t2.count() << endl;               // Displays AVX Time
     }
     else if ((numtype == "fixed") && (numsize == 2))
     {
@@ -709,24 +653,23 @@ int main(int argc, char *argv[])
         // output << "squaring results using cpp: " << endl;
         // output << endl;
 
-        long long start1 = time(NULL);
+        high_resolution_clock::time_point start1 = high_resolution_clock::now(); // Starts CPP Time
         //multiply_cpp(output, in_matrix_cpp, out_matrix_cpp, matrix_size, false);
-        //multiply_cpp(output,in_matrix_cpp,out_matrix_cpp,matrix_size,true);
-        long long end1 = time(NULL);
-        cout << "cpp multiplication took: " << end1 - start1 << endl;
+        //multiply_cpp(output,in_matrix_cpp,out_matrix_cpp,matrix_size,false);
+        high_resolution_clock::time_point end1 = high_resolution_clock::now();   // Stops CPP Time
+        duration<double, std::milli> t1 = (end1 - start1) / 1000;
+        cout << "cpp multiplication took: " << t1.count() << endl;               // Displays CPP Time
         /*
         cout << "squaring results using avx: " << endl;
         cout << endl;
         output << "squaring results using avx: " << endl;
         output << endl;
         */
-        long long start2 = time(NULL);
-        
-        multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false);
-        
-        //multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
-        long long end2 = time(NULL);
-        cout << "avx multiplication took: " << end2 - start2 << endl;
+        high_resolution_clock::time_point start2 = high_resolution_clock::now(); // Starts AVX Time
+        multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false); // AVX Multiply
+        high_resolution_clock::time_point end2 = high_resolution_clock::now();   // Stops AVX Time
+        duration<double, std::milli> t2 = (end2 - start2) / 1000;
+        cout << "avx multiplication took: " << t2.count() << endl;               // Displays AVX Time
     }
     else
     {

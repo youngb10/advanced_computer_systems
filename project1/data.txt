@@ -1,0 +1,35 @@
+on i7 9750h, 64gb ddr4 
+Inputs Accepted!
+matrix size: 5000 x 5000
+number type fixed 2 bytes 
+cpp multiplication took: 1681
+ the transpose has been processed 
+avx multiplication took: 133
+
+Inputs Accepted!
+matrix size: 4000 x 4000
+number type fixed 2 bytes 
+cpp multiplication took: 1008.9
+ the transpose has been processed
+avx multiplication took: 69.3885
+
+Inputs Accepted!
+matrix size: 1000 x 1000
+number type fixed 2 bytes 
+cpp multiplication took: 2.93475
+ the transpose has been processed 
+avx multiplication took: 
+
+Inputs Accepted!
+matrix size: 100 x 100
+number type fixed 2 bytes 
+cpp multiplication took: 0.000798
+ the transpose has been processed 
+avx multiplication took: 0.000993
+
+Inputs Accepted!
+matrix size: 10 x 10
+number type fixed 2 bytes 
+cpp multiplication took: 2e-06
+ the transpose has been processed 
+avx multiplication took: 1.5e-05
