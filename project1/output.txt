@@ -1,3 +1,3 @@
 Inputs Accepted!
-matrix size: 1000 x 1000
+matrix size: 5000 x 5000
 number type fixed 2 bytes 

@@ -19,9 +19,10 @@ using namespace std;
 
 // VERY useful link to initializing intel intrinsics
 // https://github.com/Triple-Z/AVX-AVX2-Example-Code#initialization-intrinsics
-
+// VERY useful for optimization
+// https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 /* in launch
- to compile: g++ -mavx2 -Wall -g matrix_multiply.cpp -o matrix_multiply.out
+ to compile:  g++ -mavx2 -Wall -O1 -g matrix_multiply.cpp -o matrix_multiply.out
  to run: ./matrix_multiply.out inputs.txt output.txt
  "args": [
                 "inputs.txt",
@@ -64,6 +65,8 @@ void transpose(float **in_matrix_cpp, float **in_matrix_cpp_transpose, uint matr
 void transpose(short int **in_matrix_cpp, short int **in_matrix_cpp_transpose, uint matrix_size);
 void multiply_cpp(ofstream &output, short int **in_matrix_cpp, int **out_matrix_cpp, uint matrix_size, bool print_output);
 void multiply_cpp(ofstream &output, short int **in_matrix_cpp, int **out_matrix_cpp, uint matrix_size, bool print_output);
+// add prototype for multiply cpp
+void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_matrix_cpp_transpose,uint matrix_size, bool print_transpose, bool print_output);
 
 float get_float()
 {
@@ -263,7 +266,7 @@ void multiply_avx(ofstream &output, float **in_matrix_cpp, float **in_matrix_cpp
     };
 };
 
-void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_matrix_cpp_transpose,int **out_matrix, uint matrix_size, bool print_transpose = false, bool print_output = false)
+void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_matrix_cpp_transpose,uint matrix_size, bool print_transpose = false, bool print_output = false)
 {
     // using transpose to minimize cache misses
     // only works on square matrices
@@ -273,11 +276,15 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
     
     __m256i **in_matrix_avx;
     __m256i **in_matrix_avx_transpose;
-    __m256i **out_matrix_avx;
+    //__m256i **out_matrix_avx;
 
     in_matrix_avx = new __m256i *[matrix_size];
     in_matrix_avx_transpose = new __m256i *[matrix_size];
-    out_matrix_avx = new __m256i *[matrix_size];
+    //out_matrix_avx = new __m256i *[matrix_size];
+
+    // myPointer = new int;
+    // delete myPointer; //freed memory
+    // myPointer = NULL; //pointed dangling ptr to NULL
 
     // take input matrix (vector form) and create the vectorized version using __m256
     // since matrix is square, the indecies are the same for the transpose
@@ -285,7 +292,7 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
     {   // need to double reg size because only half of the data is multiplied at once 
         in_matrix_avx[vert] = new __m256i[num_of_regs*2];
         in_matrix_avx_transpose[vert] = new __m256i[num_of_regs*2];
-        out_matrix_avx[vert] = new __m256i[num_of_regs*2];
+        //out_matrix_avx[vert] = new __m256i[num_of_regs*2];
         for (uint horiz = 0; horiz < num_of_regs; horiz++)
         {
             // looping through each element in register and checking if it exists
@@ -322,12 +329,18 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
                     }
                 }
             }
+
             __m256i temp_reg = _mm256_set_epi32(temp1[7], temp1[6], temp1[5], temp1[4], temp1[3], temp1[2], temp1[1], temp1[0]);
             __m256i *ptr =(__m256i*) &*(*(in_matrix_avx+vert)+horiz);
             _mm256_storeu_si256(ptr,temp_reg);
             __m256i temp_reg_t = _mm256_set_epi32(temp1_t[7], temp1_t[6], temp1_t[5], temp1_t[4], temp1_t[3], temp1_t[2], temp1_t[1], temp1_t[0]);
             __m256i *ptr_t =(__m256i*) &*(*(in_matrix_avx_transpose+vert)+horiz);
             _mm256_storeu_si256(ptr_t,temp_reg_t);
+
+            delete temp1;
+            temp1 = NULL;
+            delete temp1_t;
+            temp1_t = NULL;
         };
         if (print_transpose)
         {
@@ -337,7 +350,7 @@ void multiply_avx(ofstream &output, short int **in_matrix_cpp, short int **in_ma
             output << endl;
         }
     };
-
+    cout << " the transpose has been processed " << endl;
     // compute the multiplication using in_matrix and in_matrix_transpose
     // must loop through all rows of first matrix
     for (uint vert = 0; vert < matrix_size; vert++)
@@ -516,9 +529,6 @@ int main(int argc, char *argv[])
     output << "matrix size: " << matrix_size << " x " << matrix_size << endl;
     output << "number type " << numtype << " " << numsize << " bytes " << endl;
 
-    // divide by 8.0 to convert to float
-    uint num_of_regs = ceil(matrix_size / 8.0);
-
     if ((numtype == "float") && (numsize == 4))
     {
 
@@ -628,7 +638,6 @@ int main(int argc, char *argv[])
         in_matrix_cpp = new short int *[matrix_size];
         in_matrix_cpp_transpose = new short int *[matrix_size];
         out_matrix_cpp = new int *[matrix_size];
-        out_matrix_avx = new int *[matrix_size];
 
         // construct float matrix for regular cpp
         // also make empty array for out matrix and in matrix transpose
@@ -638,14 +647,12 @@ int main(int argc, char *argv[])
             in_matrix_cpp[i] = new short int[matrix_size];
             in_matrix_cpp_transpose[i] = new short int[matrix_size];
             out_matrix_cpp[i] = new int[matrix_size];
-            out_matrix_avx[i] = new int[matrix_size];
             
             for (uint j = 0; j < matrix_size; j++)
             {
                 in_matrix_cpp[i][j] = get_int();
                 in_matrix_cpp_transpose[i][j] = 0;
                 out_matrix_cpp[i][j] = 0;
-                out_matrix_avx[i][j] = 0;
             }
         }
         // transpose in matrix for computation in avx multiply
@@ -688,7 +695,7 @@ int main(int argc, char *argv[])
         */
         long long start2 = time(NULL);
         cout << "123" << endl;
-        multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, out_matrix_avx, matrix_size, false, false);
+        multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false);
         cout << "abcd" << endl;
         //multiply_avx(output, in_matrix_cpp,in_matrix_cpp_transpose,out_matrix_avx,false,true);
         long long end2 = time(NULL);
