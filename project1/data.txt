@@ -1,29 +1,29 @@
 Fixed 2-byte on i7 9750h, 64GB DDR4:               Fixed 2-byte on i9 8-core Macbook, 16MB Cache, 32GB DDR4:     Floats on i9 8-core Macbook, 16MB Cache, 32GB DDR4:
 
-  matrix size: 5000 x 5000                           Matrix Size: 10000 x 10000                                    Matrix Size: 1000 x 1000
-  number type fixed 2 bytes                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
-  cpp multiplication took: 1681                      Multiplication without SIMD: Too Long                         Multiplication without SIMD: 1.41 seconds
-  avx multiplication took: 133                       Multiplication with SIMD: 252 seconds                         Multiplication with SIMD: .168 seconds
+  Matrix Size: 5000 x 5000                           Matrix Size: 10000 x 10000                                    Matrix Size: 1000 x 1000
+  Number Type: Fixed 2-byte                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
+  Multiplication without SIMD: 1681 seconds          Multiplication without SIMD: Too Long                         Multiplication without SIMD: 1.41 seconds
+  Multiplication with SIMD: 133 seconds              Multiplication with SIMD: 252 seconds                         Multiplication with SIMD: .168 seconds
 
-  matrix size: 4000 x 4000                           Matrix Size: 8000 x 8000                                      Matrix Size: 100 x 100
-  number type fixed 2 bytes                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
-  cpp multiplication took: 1008.9                    Multiplication without SIMD: Too Long                         Multiplication without SIMD: .000939 seconds
-  avx multiplication took: 69.3885                   Multiplication with SIMD: 139 seconds                         Multiplication with SIMD: .000822 seconds
+  Matrix Size: 4000 x 4000                           Matrix Size: 8000 x 8000                                      Matrix Size: 100 x 100
+  Number Type: Fixed 2-byte                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
+  Multiplication without SIMD: 1009 seconds          Multiplication without SIMD: Too Long                         Multiplication without SIMD: .000939 seconds
+  Multiplication with SIMD: 69.4 seconds             Multiplication with SIMD: 139 seconds                         Multiplication with SIMD: .000822 seconds
 
-  matrix size: 1000 x 1000                           Matrix Size: 6000 x 6000                                      Matrix Size: 10 x 10
-  number type fixed 2 bytes                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
-  cpp multiplication took: 2.93475                   Multiplication without SIMD: Too Long                         Multiplication without SIMD: ~0 seconds
-  avx multiplication took:                           Multiplication with SIMD: 58.4 seconds                        Multiplication with SIMD: 1.3e-5 seconds
+  Matrix Size: 1000 x 1000                           Matrix Size: 6000 x 6000                                      Matrix Size: 10 x 10
+  Number Type: Fixed 2-byte                          Number Type: Fixed 2-byte                                     Number Type: Fixed 2-byte
+  Multiplication without SIMD: 2.93 seconds          Multiplication without SIMD: Too Long                         Multiplication without SIMD: ~0 seconds
+  Multiplication with SIMD: .348 seconds             Multiplication with SIMD: 58.4 seconds                        Multiplication with SIMD: 1.3e-5 seconds
 
-  matrix size: 100 x 100                             Matrix Size: 4000 x 4000
-  number type fixed 2 bytes                          Number Type: Fixed 2-byte
-  cpp multiplication took: 0.000798                  Multiplication without SIMD: 608 seconds
-  avx multiplication took: 0.000993                  Multiplication with SIMD: 20.5 seconds
+  Matrix Size: 100 x 100                             Matrix Size: 4000 x 4000
+  Number Type: Fixed 2-byte                          Number Type: Fixed 2-byte
+  Multiplication without SIMD: .000798 seconds       Multiplication without SIMD: 608 seconds
+  Multiplication with SIMD: .000993 seconds          Multiplication with SIMD: 20.5 seconds
 
-  matrix size: 10 x 10                               Matrix Size: 2000 x 2000
-  number type fixed 2 bytes                          Number Type: Fixed 2-byte
-  cpp multiplication took: 2e-06                     Multiplication without SIMD: 27.8 seconds
-  avx multiplication took: 1.5e-05                   Multiplication with SIMD: 1.78 seconds
+  Matrix Size: 10 x 10                               Matrix Size: 2000 x 2000
+  Number Type: Fixed 2-byte                          Number Type: Fixed 2-byte
+  Multiplication without SIMD: 2e-06 seconds         Multiplication without SIMD: 27.8 seconds
+  Multiplication with SIMD: 1.5e-05 seconds          Multiplication with SIMD: 1.78 seconds
   
                                                      Matrix Size: 1000 x 1000
                                                      Number Type: Fixed 2-byte
