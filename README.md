@@ -1,4 +1,13 @@
 <div id="top"></div>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
+
+
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -20,9 +29,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <!--<a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/github_username/repo_name">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>--!
+  </a>
 
 <h3 align="center">Advanced Computer Systems</h3>
 
@@ -81,7 +90,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 
 ### Built With
-<!--
+
+* [SIMD | AVX2](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
 * [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
 * [Vue.js](https://vuejs.org/)
@@ -90,10 +100,9 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 * [Laravel](https://laravel.com)
 * [Bootstrap](https://getbootstrap.com)
 * [JQuery](https://jquery.com)
--->
-* [SIMD | AVX2](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 
 
 <!-- GETTING STARTED -->
@@ -150,6 +159,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Project 4
 - [ ] Final Project 
 
+
 See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -184,6 +194,7 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 * []()
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->

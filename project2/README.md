@@ -187,7 +187,7 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 ## Acknowledgments
 
 * [README Template](https://github.com/othneildrew/Best-README-Template)
-* []()
+* [Intel Intrinsic's Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
 * []()
 
 <p align="right">(<a href="#top">back to top</a>)</p>
