@@ -9,12 +9,14 @@
 #include <fstream>        // input output files
 #include <immintrin.h>    // avx stuff
 #include <cmath>          // for floor
+#include <sys/resource.h>
 #ifdef __GNUC__
   #define ALIGN(x) x __attribute__((aligned(32)))
 #elif defined(_MSC_VER)
   #define ALIGN(x) __declspec(align(32))
 #endif
-
+#pragma comment(linker, "/STACK:2000000000")
+#pragma comment(linker, "/HEAP:2000000000")
 using namespace std;
 using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
@@ -592,9 +594,7 @@ int main(int argc, char *argv[])
         output << endl;
         */
         high_resolution_clock::time_point start2 = high_resolution_clock::now(); // Starts AVX Time
-        cout << "123" << endl;
         multiply_avx(output, in_matrix_cpp, in_matrix_cpp_transpose, matrix_size, false, false); // AVX Multiply
-        cout << "abc" << endl;
         high_resolution_clock::time_point end2 = high_resolution_clock::now();   // Stops AVX Time
         duration<double, std::milli> t2 = (end2 - start2) / 1000;
         cout << "avx multiplication took: " << t2.count() << endl;               // Displays AVX Time
