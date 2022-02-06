@@ -123,31 +123,6 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-[https://www.howtoinstall.me/ubuntu/18-04/zstd/](https://www.howtoinstall.me/ubuntu/18-04/zstd/)
-1. Install zstd by entering the following commands in the terminal:
-  ```sh 
-  sudo apt update
-  sudo apt install zstd
-  ```
-[https://github.com/facebook/zstd/releases/tag/v1.1.3](https://github.com/facebook/zstd/releases/tag/v1.1.3)
-2. Download and expand sample set 
-  ```sh
-  wget https://github.com/facebook/zstd/releases/download/v1.1.3/github_users_sample_set.tar.zst
-  zstd -d github_users_sample_set.tar.zst
-  tar xf github_users_sample_set.tar
-  ```
-3. benchmark sample set with and without dictionary compression
-  ```sh
-  zstd -b1 -r github
-  zstd --train -r github
-  zstd -b1 -r github -D dictionary
-  ```
-4. rebuild sample set archive
-  ```sh
-  tar cf github_users_sample_set.tar github
-  zstd -f --ultra -22 github_users_sample_set.tar
-  ```
-
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
    ```sh
