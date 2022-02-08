@@ -144,6 +144,14 @@ This is an example of how to list things you need to use the software and how to
   tar cf github_users_sample_set.tar github
   zstd -f --ultra -22 github_users_sample_set.tar
   ```
+5. [download github data](https://www.gharchive.org/)
+```sh 
+   wget https://data.gharchive.org/2015-01-{01..31}-{0..23}.json.gz
+```
+6. [unzip gz files](https://askubuntu.com/questions/693409/how-can-i-extract-multiple-gzip-files-in-directory-and-subdirectories)
+```sh
+gunzip -dk *.gz
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

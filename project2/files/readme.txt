@@ -1,0 +1,1 @@
+g++ -pthread pthreads.cpp -o pthreads.out
