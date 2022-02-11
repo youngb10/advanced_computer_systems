@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "cstring": "c",
+        "zstdmt_compress.h": "c",
+        "zstd.h": "c"
+    }
+}

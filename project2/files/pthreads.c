@@ -6,7 +6,8 @@
 #include <errno.h>     // errno
 #include <sys/stat.h>  // stat
 #include <zstd.h>      // presumes zstd library is installed
-#define NUM_THREADS     5
+//#include </home/allan/advanced_computer_systems/project2/zstd-1.1.3/lib/compress/zstdmt_compress.c>
+#define NUM_THREADS     2
 
 
 static void* malloc_orDie(size_t size)
@@ -135,45 +136,49 @@ void *arg_helper(void *threadarg){
     arg2 = my_data->arg2;
     arg3 = my_data->arg3;
     printf("Hello World! It's me, thread #%ld!\n", taskid);
-    compressFile_orDie(arg1, arg2, arg3);
+    //compressFile_orDie(arg1, arg2, arg3);
     pthread_exit(NULL);
 }
 
 int main (int argc, char *argv[])
-{
-pthread_t threads[NUM_THREADS];
-int rc;
-long t;
-for(t=0; t<NUM_THREADS; t++){
+    {
+    pthread_t threads[NUM_THREADS];
+    int rc;
+    long t;
+    for(t=0; t<NUM_THREADS; t++){
+        const char* const exeName = argv[0];
+        const char* const inFilename = argv[1];
+        if (argc!=2) {
+            printf("wrong arguments\n");
+            printf("usage:\n");
+            printf("%s FILE\n", exeName);
+            return 1;
+        }
+        const char* const outFilename = createOutFilename_orDie(inFilename);
+        //compressFile_orDie(inFilename, outFilename, 1);
 
-    const char* const exeName = argv[0];
-    const char* const inFilename = argv[1];
+        thread_data_array[0].thread_id = 1;
+        thread_data_array[0].arg1 = inFilename;
+        thread_data_array[0].arg2 = outFilename;
+        thread_data_array[0].arg3 = 1;
+        thread_data_array[1].thread_id = 2;
+        thread_data_array[1].arg1 = inFilename;
+        thread_data_array[1].arg2 = outFilename;
+        thread_data_array[1].arg3 = 1;
+        static ZSTDMT_bufferPool* a;
+        a = ZSTDMT_createBufferPool(2);
 
-    if (argc!=2) {
-        printf("wrong arguments\n");
-        printf("usage:\n");
-        printf("%s FILE\n", exeName);
-        return 1;
+
+        // printf("In main: creating thread %ld\n", t);
+        // //rc = pthread_create(&threads[t], NULL, PrintHello, (void *)t);
+        // rc = pthread_create(&threads[t], NULL, arg_helper, 
+        //     (void *) &thread_data_array[t]);
+        // if (rc){
+        //     printf("ERROR; return code from pthread_create() is %d\n", rc);
+        //     exit(-1);
+        // }
     }
 
-    const char* const outFilename = createOutFilename_orDie(inFilename);
-    //compressFile_orDie(inFilename, outFilename, 1);
-
-    thread_data_array[0].thread_id = 1;
-    thread_data_array[0].arg1 = inFilename;
-    thread_data_array[0].arg2 = outFilename;
-    thread_data_array[0].arg3 = 1;
-
-    printf("In main: creating thread %ld\n", t);
-    //rc = pthread_create(&threads[t], NULL, PrintHello, (void *)t);
-    rc = pthread_create(&threads[t], NULL, arg_helper, 
-        (void *) &thread_data_array[t]);
-    if (rc){
-        printf("ERROR; return code from pthread_create() is %d\n", rc);
-        exit(-1);
-    }
-}
-
-/* Last thing that main() should do */
-pthread_exit(NULL);
+    /* Last thing that main() should do */
+    pthread_exit(NULL);
 }

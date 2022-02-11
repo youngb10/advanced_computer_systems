@@ -14,6 +14,7 @@ LDFLAGS+= -lzstd
 .PHONY: default all clean test
 
 default: all
+INC=-I/home/allan/advanced_computer_systems/project2/zstd-1.1.3/lib/compress/
 
 all: simple_compression simple_decompression \
 	dictionary_compression dictionary_decompression \
@@ -21,7 +22,7 @@ all: simple_compression simple_decompression \
 	multiple_streaming_compression
 
 pthreads : pthreads.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -pthread -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(INC) $^ $(LDFLAGS) -pthread -o $@
 
 simple_compression : simple_compression.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
