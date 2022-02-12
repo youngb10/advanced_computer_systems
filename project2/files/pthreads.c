@@ -6,6 +6,7 @@
 #include <errno.h>     // errno
 #include <sys/stat.h>  // stat
 #include <zstd.h>      // presumes zstd library is installed
+#include "common.h"    // Helper functions, CHECK(), and CHECK_ZSTD()
 //#include </home/allan/advanced_computer_systems/project2/zstd-1.1.3/lib/compress/zstdmt_compress.c>
 #define NUM_THREADS     2
 

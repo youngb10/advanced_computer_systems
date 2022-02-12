@@ -17,7 +17,7 @@ LIB = $(LIBDIR)/libzstd.a
 default: all
 
 .PHONY: all
-all: simple_compression simple_decompression \
+all: streaming_compression_thread_pool simple_compression simple_decompression \
 	multiple_simple_compression\
 	dictionary_compression dictionary_decompression \
 	streaming_compression streaming_decompression \
@@ -25,6 +25,9 @@ all: simple_compression simple_decompression \
 
 $(LIB) :
 	$(MAKE) -C $(LIBDIR) libzstd.a
+
+streaming_compression_thread_pool.o: common.h
+streaming_compression_thread_pool : $(LIB)
 
 simple_compression.o: common.h
 simple_compression : $(LIB)
