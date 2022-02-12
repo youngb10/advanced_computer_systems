@@ -162,14 +162,6 @@ See the [open issues](https://github.com/github_username/repo_name/issues) for a
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- CONTACT -->
 ## Contact
@@ -188,7 +180,8 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 
 * [README Template](https://github.com/othneildrew/Best-README-Template)
 * [Intel Intrinsic's Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
-* []()
+* [ZSTD v1.5.2 Manual](https://raw.githack.com/facebook/zstd/release/doc/zstd_manual.html)
+* [POSIX Thread Programming](https://hpc-tutorials.llnl.gov/posix/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
