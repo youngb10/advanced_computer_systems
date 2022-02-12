@@ -3,83 +3,64 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+The objective of this project is to implement a C/C++ module that uses multiple threads to compress an input data stream. The input file is split into 16kB chunks, and each 16kB chunk is dispatched to another thread to be compressed. The compressed blocks are then read back in order and written to an output file. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-### Built With
+### Installation and Usage
 
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+1. Clone the GitHub repo for Project 2 and open the folder.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+2. Verify that ZSTD is installed. Verify you are on a Linux OS. 
 
+3. Download silesia.txt (~240MB uncompressed) from the ECSE-4961 Webex Teams, place it in the Project 2 directory.
 
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+4. Run the following commands inside the Project 2 directory to compile:
   ```sh
-  npm install npm@latest -g
+  gcc -pthread -O3 main.c -lzstd
+  ./a.out FILE
   ```
 
-### Installation
+5. Enter how many simultaneous threads you would like once running the program. 
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+**Unfortunately, we were unable to get the ZSTD compression to run without seg faults. The program's intended execution is detailed in the 'Structure' section.**
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-<!-- USAGE EXAMPLES -->
-## Usage
+<!-- STRUCTURE -->
+## Structure
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+The overall structure of the program entails one thread reading data from the input file, allocating space in memory for the compression, receiving compressed blocks, and writing the compressed blocks to the output, while a number of other threads implements the ZSTD compression. The number of threads is user configurable, with a minimum of two. The 'silesia.txt' file is used for compression. 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+The program starts by reading data in from the file to be compressed. The number of total blocks that need to be compressed is determined using the size of this file. The program takes input from the user on how many threads should be created. Using these values, other critical information is calculated such as the number of blocks each thread will handle, the size of the last block, and the thread which will handle the last block. 
+
+The threads that will be used for compression are then created. Because a thread can typically only read in one argument, a new struct must be created to hold all of the required information for each thread. This information includes the thread id, the memory locations of the input and output, and other values previously calculated. All of the threads that do the compression are forked at the same time, while the original thread is used for controls and gathering the output blocks. 
+
+In the compression function which each compression thread executes, the data is first retrieved from the struct. The data from the struct is used to determine which threads do which blocks from the input, and the ZSTD_compress functions are run. Once the compression is finished, a global array is updated which allows the main thread to see the progress. Each thread is responsible for independent elements, so no threads write over each other. 
+
+Back in the original thread, a while loop is constructed so that the thread will only continue and write to the output when the next compressed block is ready. This process repeats for as many blocks as there are, receiving the length of each compressed block from the global array. After the main thread writes all of the blocks to the output file, both the input and output files are closed, and the program ends. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-<!-- ROADMAP -->
-## Roadmap
+<!-- Experimental Results -->
+## Experimental Results
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+We were unable to obtain experimental results due to the seg faults that were occurring. 
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- Conclusion -->
+## Conclusion
+
+As hardware improvements gradually slow, one of the most significant ways to improve performance is through software-level parallelism. This is precisely what multithreading accomplishes. Multithreading is particularly useful and efficient in cases such as these, where there is a large amount of data that has no dependencies. Instead of a single thread moving through the independent calculations and compression, multiple threads are able to perform the same calculations in parallel without losses. There is some amount of overhead that is involved with creating and managing threads, especially since the operating system has to get involved, but that overhead is absolutely worth it when there are large amounts ofcalculations to be done that are independent of each other. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
