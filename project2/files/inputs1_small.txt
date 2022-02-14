@@ -1,0 +1,8 @@
+# The number of pool threads
+12
+# The buffer size in bytes
+16000
+# The compression level
+1
+# The file to compress (relative path)
+../small_github_users_sample_set.tar

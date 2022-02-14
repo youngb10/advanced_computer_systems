@@ -24,10 +24,10 @@ all: streaming_compression_thread_pool simple_compression simple_decompression \
 	multiple_streaming_compression streaming_memory_usage
 
 $(LIB) :
-	$(MAKE) -C $(LIBDIR) libzstd.a
+	$(MAKE) -C $(LIBDIR) libzstd.a 
 
 streaming_compression_thread_pool.o: common.h
-streaming_compression_thread_pool : $(LIB)
+streaming_compression_thread_pool : $(LIB) 
 
 simple_compression.o: common.h
 simple_compression : $(LIB)

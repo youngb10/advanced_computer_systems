@@ -9,22 +9,29 @@
 # ################################################################
 
 LIBDIR =../zstd-1.5.2/lib
-CPPFLAGS += -I$(LIBDIR)
-LIB = $(LIBDIR)/libzstd.a
+CPPFLAGS +=  -I$(LIBDIR)
+LIB = -pthread $(LIBDIR)/libzstd.a
 
 
 .PHONY: default
 default: all
 
 .PHONY: all
-all: streaming_compression_threads simple_compression simple_decompression \
+all: pthreads_streaming_compression streaming_compression_thread_pool streaming_compression_threads simple_compression simple_decompression \
 	multiple_simple_compression\
 	dictionary_compression dictionary_decompression \
 	streaming_compression streaming_decompression \
 	multiple_streaming_compression streaming_memory_usage
 
 $(LIB) :
-	$(MAKE) -C $(LIBDIR) libzstd.a
+	$(MAKE) -C  $(LIBDIR) libzstd.a
+
+
+pthreads_streaming_compression.o: common.h
+pthreads_streaming_compression : $(LIB)
+
+streaming_compression_thread_pool.o: common.h 
+streaming_compression_thread_pool :  $(LIB) 
 
 streaming_compression_threads.o: common.h
 streaming_compression_threads : $(LIB)

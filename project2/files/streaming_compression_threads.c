@@ -32,7 +32,9 @@ static void compressFile_orDie(const char* fname, const char* outName, int cLeve
     void*  const buffIn  = malloc_orDie(buffInSize);
     size_t const buffOutSize = ZSTD_CStreamOutSize();
     void*  const buffOut = malloc_orDie(buffOutSize);
-
+    // in size of 131,072 bytes ~ 131kb
+    // out size of 131, 591 ~ 131kb 
+    //printf("%lu",buffOutSize);
     /* Create the context. */
     ZSTD_CCtx* const cctx = ZSTD_createCCtx();
     CHECK(cctx != NULL, "ZSTD_createCCtx() failed!");

@@ -158,6 +158,7 @@ static size_t fwrite_orDie(const void* buffer, size_t sizeToWrite, FILE* file)
  * @return If successful this function returns a pointer to allo-
  * cated memory.  If there is an error, this function will send that
  * error to stderr and exit.
+ * size in bytes
  */
 static void* malloc_orDie(size_t size)
 {
