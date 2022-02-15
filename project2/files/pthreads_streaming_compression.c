@@ -14,8 +14,8 @@
 #include <zstd.h>      // presumes zstd library is installed
 #include "common.h"    // Helper functions, CHECK(), and CHECK_ZSTD()
 #include <pthread.h>
-
-
+#include <time.h>
+//#define ZSTD_STATIC_LINKING_ONLY
 // modified version of zstd 1.5.2 examples, streaming_compression_thread_pool
 
 typedef struct compress_args
@@ -23,6 +23,7 @@ typedef struct compress_args
   const char *fname;
   char *outName;
   int cLevel;
+  int nbThreads;
 #if defined(ZSTD_STATIC_LINKING_ONLY)
   ZSTD_threadPool *pool;
 #endif
@@ -30,9 +31,10 @@ typedef struct compress_args
 
 static void *compressFile_orDie(void *data)
 {
-    const int nbThreads = 12;
-
+    //const int nbThreads = 12;
+    
     compress_args_t *args = (compress_args_t *)data;
+    const int nbThreads = args->nbThreads;
     fprintf (stderr, "Starting compression of %s with level %d, using %d threads\n", args->fname, args->cLevel, nbThreads);
     /* Open the input and output files. */
     FILE* const fin  = fopen_orDie(args->fname, "rb");
@@ -157,6 +159,7 @@ int main(int argc, const char** argv)
     
     // https://www.educative.io/edpresso/splitting-a-string-using-strtok-in-c
     int pool_size;
+    int nbThreads;
     int buff_size;
     int level;
     char* fin;
@@ -171,6 +174,10 @@ int main(int argc, const char** argv)
         pool_size = strtol(line,NULL,10);
         line = strtok(NULL, "\n");
         line = strtok(NULL, "\n");
+        // read number of threads
+        nbThreads = strtol(line,NULL,10);
+        line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
         // read buffer size
         buff_size = strtol(line,NULL,10);
         line = strtok(NULL, "\n");
@@ -183,20 +190,24 @@ int main(int argc, const char** argv)
         fin = line;
         break;        
     }
-    printf( "\tnumber of threads: %lu\n", pool_size );
-    //printf("%s\n",buffIn);
-    
+    // fix print statement for pools
+    printf("To compress: %s; initial size: %lu bytes\n",fin,fsize_orDie(fin));
     CHECK(pool_size != 0, "can't parse POOL_SIZE!");
+    printf("  number of pool threads: %u\n", pool_size);
+    CHECK(nbThreads != 0, "can't parse NBTHREADS!");
+    printf("  number of threads: %u\n", nbThreads);
+    //printf("%s\n",buffIn);
     CHECK(buff_size != 0, "can't parse BUFF_SIZE!");
+    printf("  buff size: %u\n", buff_size);
     CHECK(level != 0, "can't parse LEVEL!");
-    
-    
+    printf("  compression level: %u\n", level);
 
-    //char *file_name = argv[8];
-    //printf(file_name);
+    // equal to number of inputs - 1
+    argc -= 1;
+    argv += 1;
 
-    argc -= 3;
-    argv += 3;
+    // start time
+    time_t start_time = time(NULL);
 
 #if defined(ZSTD_STATIC_LINKING_ONLY)
     ZSTD_threadPool *pool = ZSTD_createThreadPool (pool_size);
@@ -208,12 +219,16 @@ int main(int argc, const char** argv)
 
     pthread_t *threads = malloc_orDie(argc * sizeof(pthread_t));
     compress_args_t *args = malloc_orDie(argc * sizeof(compress_args_t));
-
+    // not sure why this is a loop, may delete later
+    // argc should be 1, so this shouldnt matter... either way why would
+    // the number of args matter? maybe if there are multiple files?
     for (unsigned i = 0; i < argc; i++)
     {
-      args[i].fname = argv[i];
+      //args[i].fname = argv[i];
+      args[i].fname = fin;
       args[i].outName = createOutFilename_orDie(args[i].fname);
       args[i].cLevel = level;
+      args[i].nbThreads = nbThreads;
 #if defined(ZSTD_STATIC_LINKING_ONLY)
       args[i].pool = pool;
 #endif
@@ -227,6 +242,10 @@ int main(int argc, const char** argv)
 #if defined(ZSTD_STATIC_LINKING_ONLY)
     ZSTD_freeThreadPool (pool);
 #endif
+
+    time_t end_time = time(NULL);
+    time_t delta = end_time-start_time;
+    printf("time to compress: %lu seconds\n",delta);
 
     return 0;
 }

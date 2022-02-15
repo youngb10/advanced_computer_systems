@@ -142,10 +142,10 @@ int main(int argc, const char** argv)
 
     int level = atoi (argv[2]);
     CHECK(level != 0, "can't parse LEVEL!");
-
+    //printf("%u",argc);
     argc -= 3;
     argv += 3;
-
+    //printf("%u",argc);
 #if defined(ZSTD_STATIC_LINKING_ONLY)
     ZSTD_threadPool *pool = ZSTD_createThreadPool (pool_size);
     CHECK(pool != NULL, "ZSTD_createThreadPool() failed!");
