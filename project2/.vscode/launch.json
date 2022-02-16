@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
+            "args": ["inputs_small.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

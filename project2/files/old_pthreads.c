@@ -1,181 +1,257 @@
-#include <pthread.h>
-#include <stdlib.h>    // malloc, free, exit
-#include <stdio.h>     // fprintf, perror, fopen, etc.
-#include <string.h>    // strlen, strcat, memset, strerror
-#include <errno.h>     // errno
-#include <sys/stat.h>  // stat
+/*
+ * Copyright (c) Martin Liska, SUSE, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
+ * You may select, at your option, one of the above-listed licenses.
+ */
+
+#include <stdio.h>     // printf
+#include <stdlib.h>    // free
+#include <string.h>    // memset, strcat, strlen
 #include <zstd.h>      // presumes zstd library is installed
 #include "common.h"    // Helper functions, CHECK(), and CHECK_ZSTD()
-//#include </home/allan/advanced_computer_systems/project2/zstd-1.1.3/lib/compress/zstdmt_compress.c>
-#define NUM_THREADS     2
+#include <pthread.h>
+#include <time.h>
+//#define ZSTD_STATIC_LINKING_ONLY
+// modified version of zstd 1.5.2 examples, streaming_compression_thread_pool
 
-
-static void* malloc_orDie(size_t size)
+typedef struct compress_args
 {
-    void* const buff = malloc(size);
-    if (buff) return buff;
-    /* error */
-    perror("malloc:");
-    exit(1);
-}
+  const char *fname;
+  char *outName;
+  int cLevel;
+  int nbThreads;
+  int buffSize;
+#if defined(ZSTD_STATIC_LINKING_ONLY)
+  ZSTD_threadPool *pool;
+#endif
+} compress_args_t;
 
-static FILE* fopen_orDie(const char *filename, const char *instruction)
+static void *compressFile_orDie(void *data)
 {
-    FILE* const inFile = fopen(filename, instruction);
-    if (inFile) return inFile;
-    /* error */
-    perror(filename);
-    exit(3);
-}
-
-static size_t fread_orDie(void* buffer, size_t sizeToRead, FILE* file)
-{
-    size_t const readSize = fread(buffer, 1, sizeToRead, file);
-    if (readSize == sizeToRead) return readSize;   /* good */
-    if (feof(file)) return readSize;   /* good, reached end of file */
-    /* error */
-    perror("fread");
-    exit(4);
-}
-
-static size_t fwrite_orDie(const void* buffer, size_t sizeToWrite, FILE* file)
-{
-    size_t const writtenSize = fwrite(buffer, 1, sizeToWrite, file);
-    if (writtenSize == sizeToWrite) return sizeToWrite;   /* good */
-    /* error */
-    perror("fwrite");
-    exit(5);
-}
-
-static size_t fclose_orDie(FILE* file)
-{
-    if (!fclose(file)) return 0;
-    /* error */
-    perror("fclose");
-    exit(6);
-}
-
-static void compressFile_orDie(const char* fname, const char* outName, int cLevel)
-{
-    FILE* const fin  = fopen_orDie(fname, "rb");
-    FILE* const fout = fopen_orDie(outName, "wb");
-    size_t const buffInSize = ZSTD_CStreamInSize();    /* can always read one full block */
+    //const int nbThreads = 12;
+    
+    compress_args_t *args = (compress_args_t *)data;
+    const int nbThreads = args->nbThreads;
+    fprintf (stderr, "Starting compression of %s with level %d, using %d threads\n", args->fname, args->cLevel, nbThreads);
+    /* Open the input and output files. */
+    FILE* const fin  = fopen_orDie(args->fname, "rb");
+    FILE* const fout = fopen_orDie(args->outName, "wb");
+    /* Create the input and output buffers.
+     * They may be any size, but we recommend using these functions to size them.
+     * Performance will only suffer significantly for very tiny buffers.
+     */
+    //size_t const buffInSize = ZSTD_CStreamInSize();
+    size_t const buffInSize = args->buffSize;
     void*  const buffIn  = malloc_orDie(buffInSize);
-    size_t const buffOutSize = ZSTD_CStreamOutSize();  /* can always flush a full block */
+    size_t const buffOutSize = ZSTD_CStreamOutSize();
     void*  const buffOut = malloc_orDie(buffOutSize);
 
-    ZSTD_CStream* const cstream = ZSTD_createCStream();
-    if (cstream==NULL) { fprintf(stderr, "ZSTD_createCStream() error \n"); exit(10); }
-    size_t const initResult = ZSTD_initCStream(cstream, cLevel);
-    if (ZSTD_isError(initResult)) { fprintf(stderr, "ZSTD_initCStream() error : %s \n", ZSTD_getErrorName(initResult)); exit(11); }
+    /* Create the context. */
+    ZSTD_CCtx* const cctx = ZSTD_createCCtx();
+    CHECK(cctx != NULL, "ZSTD_createCCtx() failed!");
 
-    size_t read, toRead = buffInSize;
-    while( (read = fread_orDie(buffIn, toRead, fin)) ) {
+#if defined(ZSTD_STATIC_LINKING_ONLY)
+    size_t r = ZSTD_CCtx_refThreadPool(cctx, args->pool);
+    CHECK(r == 0, "ZSTD_CCtx_refThreadPool failed!");
+#endif
+
+    /* Set any parameters you want.
+     * Here we set the compression level, and enable the checksum.
+     */
+    // this is probably not using multithreading 
+    CHECK_ZSTD( ZSTD_CCtx_setParameter(cctx, ZSTD_c_compressionLevel, args->cLevel) );
+    CHECK_ZSTD( ZSTD_CCtx_setParameter(cctx, ZSTD_c_checksumFlag, 1) );
+    ZSTD_CCtx_setParameter(cctx, ZSTD_c_nbWorkers, nbThreads);
+
+    /* This loop reads from the input file, compresses that entire chunk,
+     * and writes all output produced to the output file.
+     */
+    size_t const toRead = buffInSize;
+    for (;;) {
+        size_t read = fread_orDie(buffIn, toRead, fin);
+        /* Select the flush mode.
+         * If the read may not be finished (read == toRead) we use
+         * ZSTD_e_continue. If this is the last chunk, we use ZSTD_e_end.
+         * Zstd optimizes the case where the first flush mode is ZSTD_e_end,
+         * since it knows it is compressing the entire source in one pass.
+         */
+        int const lastChunk = (read < toRead);
+        ZSTD_EndDirective const mode = lastChunk ? ZSTD_e_end : ZSTD_e_continue;
+        /* Set the input buffer to what we just read.
+         * We compress until the input buffer is empty, each time flushing the
+         * output.
+         */
         ZSTD_inBuffer input = { buffIn, read, 0 };
-        while (input.pos < input.size) {
+        int finished;
+        do {
+            /* Compress into the output buffer and write all of the output to
+             * the file so we can reuse the buffer next iteration.
+             */
             ZSTD_outBuffer output = { buffOut, buffOutSize, 0 };
-            toRead = ZSTD_compressStream(cstream, &output , &input);   /* toRead is guaranteed to be <= ZSTD_CStreamInSize() */
-            if (ZSTD_isError(toRead)) { fprintf(stderr, "ZSTD_compressStream() error : %s \n", ZSTD_getErrorName(toRead)); exit(12); }
-            if (toRead > buffInSize) toRead = buffInSize;   /* Safely handle case when `buffInSize` is manually changed to a value < ZSTD_CStreamInSize()*/
+            size_t const remaining = ZSTD_compressStream2(cctx, &output , &input, mode);
+            //fprintf (stderr, "  Compressing thread #%u; remaining flush %lu\n", 000,remaining);
+            CHECK_ZSTD(remaining);
             fwrite_orDie(buffOut, output.pos, fout);
+            /* If we're on the last chunk we're finished when zstd returns 0,
+             * which means its consumed all the input AND finished the frame.
+             * Otherwise, we're finished when we've consumed all the input.
+             */
+            finished = lastChunk ? (remaining == 0) : (input.pos == input.size);
+        } while (!finished);
+        CHECK(input.pos == input.size,
+              "Impossible: zstd only returns 0 when the input is completely consumed!");
+
+        if (lastChunk) {
+            break;
         }
     }
 
-    ZSTD_outBuffer output = { buffOut, buffOutSize, 0 };
-    size_t const remainingToFlush = ZSTD_endStream(cstream, &output);   /* close frame */
-    if (remainingToFlush) { fprintf(stderr, "not fully flushed"); exit(13); }
-    fwrite_orDie(buffOut, output.pos, fout);
-
-    ZSTD_freeCStream(cstream);
+    fprintf (stderr, "Finishing compression of %s\n", args->outName);
+    fprintf (stderr, "File size after compression: %lu\n", fsize_orDie(args->outName));
+    fprintf (stderr, "Final compression ratio: %.6f\n", 1.0*fsize_orDie(args->fname)/fsize_orDie(args->outName));
+    ZSTD_freeCCtx(cctx);
     fclose_orDie(fout);
     fclose_orDie(fin);
     free(buffIn);
     free(buffOut);
+    free(args->outName);
+
+    return NULL;
 }
 
 
-static const char* createOutFilename_orDie(const char* filename)
+static char* createOutFilename_orDie(const char* filename)
 {
     size_t const inL = strlen(filename);
     size_t const outL = inL + 5;
-    void* outSpace = malloc_orDie(outL);
+    void* const outSpace = malloc_orDie(outL);
     memset(outSpace, 0, outL);
     strcat(outSpace, filename);
     strcat(outSpace, ".zst");
-    return (const char*)outSpace;
+    return (char*)outSpace;
 }
 
-void *PrintHello(void *threadid)
+int main(int argc, const char** argv)
 {
-    long tid;
-    tid = (long)threadid;
-    printf("Hello World! It's me, thread #%ld!\n", tid);
-    pthread_exit(NULL);
-}
+    const char* const exeName = argv[0];
 
-struct thread_data{
-   int  thread_id;
-   char *arg1;
-   char *arg2;
-   int  arg3;
-};
+    if (argc!=2) {
+        printf("wrong arguments\n");
+        printf("usage:\n");
+        printf("%s inputs.txt\n", exeName);
+        printf("where inputs.txt has the following format:\n");
+        printf("# The number of pool threads\n");
+        printf("12\n");
+        printf("# The buffer size in bytes\n");
+        printf("16000\n");
+        printf("# The compression level\n");
+        printf("1\n");
+        printf("# The file to compress (relative path)\n");
+        printf("../data_set.tar\n");
+        return 1;
+    }
+    //printf("%s\n",argv[1]);
+    FILE* const fin_parameters  = fopen_orDie(argv[1], "rb");
+    
+    size_t const buffInSize = fsize_orDie(argv[1]);
+    void*  const buffIn  = malloc_orDie(buffInSize);
+    size_t const toRead = buffInSize;
+    size_t read = fread_orDie(buffIn, toRead, fin_parameters);
+    
+    // https://www.educative.io/edpresso/splitting-a-string-using-strtok-in-c
+    int pool_size;
+    int nbThreads;
+    int buff_size;
+    int level;
+    char* fin;
+    char * line = strtok(buffIn, "\n");
+    // loop through the string to extract all other tokens
+    while( 1 ) {
+        //printf( " %s\n", line ); //printing each line
+        // discard first value, then every other value
+        //line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
+        // read pool size
+        pool_size = strtol(line,NULL,10);
+        line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
+        // read number of threads
+        nbThreads = strtol(line,NULL,10);
+        line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
+        // read buffer size
+        buff_size = strtol(line,NULL,10);
+        line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
+        // read compression level
+        level = strtol(line,NULL,10);
+        line = strtok(NULL, "\n");
+        line = strtok(NULL, "\n");
+        // read file to compress name
+        fin = line;
+        break;        
+    }
+    // fix print statement for pools
+    printf("To compress: %s; initial size: %lu bytes\n",fin,fsize_orDie(fin));
+    CHECK(pool_size != 0, "can't parse POOL_SIZE!");
+    printf("  number of pool threads: %u\n", pool_size);
+    CHECK(nbThreads != 0, "can't parse NBTHREADS!");
+    printf("  number of threads: %u\n", nbThreads);
+    //printf("%s\n",buffIn);
+    CHECK(buff_size != 0, "can't parse BUFF_SIZE!");
+    printf("  buff size: %u\n", buff_size);
+    CHECK(level != 0, "can't parse LEVEL!");
+    printf("  compression level: %u\n", level);
 
-//struct thread_data thread_data_array[NUM_THREADS];
-struct thread_data thread_data_array[1];
+    // equal to number of inputs - 1
+    argc -= 1;
+    argv += 1;
 
-void *arg_helper(void *threadarg){
-    // https://hpc-tutorials.llnl.gov/posix/passing_args/
-    struct thread_data *my_data;
-    my_data = (struct thread_data *) threadarg;
-    long int  taskid;
-    char *arg1;
-    char *arg2;
-    int  arg3;
-    taskid = my_data->thread_id;
-    arg1 = my_data->arg1;
-    arg2 = my_data->arg2;
-    arg3 = my_data->arg3;
-    printf("Hello World! It's me, thread #%ld!\n", taskid);
-    //compressFile_orDie(arg1, arg2, arg3);
-    pthread_exit(NULL);
-}
+    // start time
+    time_t start_time = time(NULL);
 
-int main (int argc, char *argv[])
+#if defined(ZSTD_STATIC_LINKING_ONLY)
+    ZSTD_threadPool *pool = ZSTD_createThreadPool (pool_size);
+    CHECK(pool != NULL, "ZSTD_createThreadPool() failed!");
+    fprintf (stderr, "Using shared thread pool of size %d\n", pool_size);
+#else
+    fprintf (stderr, "All threads use its own thread pool\n");
+#endif
+    //argc = 12;
+    pthread_t *threads = malloc_orDie(argc * sizeof(pthread_t));
+    compress_args_t *args = malloc_orDie(argc * sizeof(compress_args_t));
+    // not sure why this is a loop, may delete later
+    // argc should be 1, so this shouldnt matter... either way why would
+    // the number of args matter? maybe if there are multiple files?
+    for (unsigned i = 0; i < argc; i++)
     {
-    pthread_t threads[NUM_THREADS];
-    int rc;
-    long t;
-    for(t=0; t<NUM_THREADS; t++){
-        const char* const exeName = argv[0];
-        const char* const inFilename = argv[1];
-        if (argc!=2) {
-            printf("wrong arguments\n");
-            printf("usage:\n");
-            printf("%s FILE\n", exeName);
-            return 1;
-        }
-        const char* const outFilename = createOutFilename_orDie(inFilename);
-        //compressFile_orDie(inFilename, outFilename, 1);
+      //args[i].fname = argv[i];
+      args[i].fname = fin;
+      args[i].outName = createOutFilename_orDie(args[i].fname);
+      args[i].cLevel = level;
+      args[i].nbThreads = nbThreads;
+      args[i].buffSize = buff_size;
+#if defined(ZSTD_STATIC_LINKING_ONLY)
+      args[i].pool = pool;
+#endif
 
-        thread_data_array[0].thread_id = 1;
-        thread_data_array[0].arg1 = inFilename;
-        thread_data_array[0].arg2 = outFilename;
-        thread_data_array[0].arg3 = 1;
-        thread_data_array[1].thread_id = 2;
-        thread_data_array[1].arg1 = inFilename;
-        thread_data_array[1].arg2 = outFilename;
-        thread_data_array[1].arg3 = 1;
-
-        // printf("In main: creating thread %ld\n", t);
-        // //rc = pthread_create(&threads[t], NULL, PrintHello, (void *)t);
-        // rc = pthread_create(&threads[t], NULL, arg_helper, 
-        //     (void *) &thread_data_array[t]);
-        // if (rc){
-        //     printf("ERROR; return code from pthread_create() is %d\n", rc);
-        //     exit(-1);
-        // }
+      pthread_create (&threads[i], NULL, compressFile_orDie, &args[i]);
     }
 
-    /* Last thing that main() should do */
-    pthread_exit(NULL);
+    for (unsigned i = 0; i < argc; i++)
+      pthread_join (threads[i], NULL);
+
+#if defined(ZSTD_STATIC_LINKING_ONLY)
+    ZSTD_freeThreadPool (pool);
+#endif
+
+    time_t end_time = time(NULL);
+    time_t delta = end_time-start_time;
+    printf("time to compress: %lu seconds\n",delta);
+
+    return 0;
 }

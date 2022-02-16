@@ -17,7 +17,7 @@ LIB = -pthread $(LIBDIR)/libzstd.a
 default: all
 
 .PHONY: all
-all: pthreads_streaming_compression streaming_compression_thread_pool streaming_compression_threads simple_compression simple_decompression \
+all: old_pthreads pthreads_streaming_compression streaming_compression_thread_pool streaming_compression_threads simple_compression simple_decompression \
 	multiple_simple_compression\
 	dictionary_compression dictionary_decompression \
 	streaming_compression streaming_decompression \
@@ -29,6 +29,9 @@ $(LIB) :
 
 pthreads_streaming_compression.o: common.h
 pthreads_streaming_compression : $(LIB)
+
+old_pthreads.o: common.h
+old_pthreads : $(LIB)
 
 streaming_compression_thread_pool.o: common.h 
 streaming_compression_thread_pool :  $(LIB) 

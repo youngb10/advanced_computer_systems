@@ -2,6 +2,8 @@
     "files.associations": {
         "cstring": "c",
         "zstdmt_compress.h": "c",
-        "zstd.h": "c"
+        "zstd.h": "c",
+        "pthread.h": "c",
+        "streambuf": "c"
     }
 }
