@@ -1,5 +1,5 @@
-# The number of pool threads
-12
+# Debugging Printing Enabled
+1
 # The number of threads
 12
 # The buffer size in bytes

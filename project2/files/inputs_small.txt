@@ -1,7 +1,7 @@
-# The number of pool threads
+# Debugging Printing Enabled
 0
 # The number of threads
-1
+6
 # The buffer size in bytes
 100000
 # The compression level
