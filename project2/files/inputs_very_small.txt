@@ -1,0 +1,10 @@
+# The number of pool threads
+12
+# The number of threads
+1
+# The buffer size in bytes
+10000
+# The compression level
+10
+# The file to compress (relative path)
+../very_small_v1.5.2.zip

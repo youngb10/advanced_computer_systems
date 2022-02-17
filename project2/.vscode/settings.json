@@ -4,6 +4,7 @@
         "zstdmt_compress.h": "c",
         "zstd.h": "c",
         "pthread.h": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "cstdio": "c"
     }
 }

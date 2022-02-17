@@ -1,9 +1,9 @@
 # The number of pool threads
 0
 # The number of threads
-2
+1
 # The buffer size in bytes
-1000000
+100000
 # The compression level
 50
 # The file to compress (relative path)
