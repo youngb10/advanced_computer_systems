@@ -3,7 +3,7 @@
 # The number of threads
 12
 # The buffer size in bytes
-100000
+1000000000
 # The compression level
 1
 # The file to compress (relative path)

@@ -10,7 +10,8 @@
 
 LIBDIR =../zstd-1.5.2/lib
 CPPFLAGS +=  -I$(LIBDIR)
-LIB = -pthread $(LIBDIR)/libzstd.a
+# may need to replace -Ofast with -O3
+LIB = -Ofast -pthread $(LIBDIR)/libzstd.a
 
 
 .PHONY: default

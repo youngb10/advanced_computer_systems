@@ -33,11 +33,11 @@ typedef struct compress_args
   int cLevel;
   int debug;
   int threadId;
-  int buffInSize;
+  unsigned long long buffInSize;
   void* buffIn;
   int buffOutSize;
   void* buffOut;
-  int bytesToRead;
+  unsigned long long bytesToRead;
   FILE* fin;
   FILE* fout;   
   ZSTD_CCtx* cctx;
@@ -46,7 +46,7 @@ typedef struct compress_args
 static void *compressFile_orDie(void *data)
 {   
     compress_args_t *args = (compress_args_t *)data;
-    fprintf (stderr, "  Starting compressing thread # %u; bytes to compress: %u\n", args->threadId, args->bytesToRead);
+    fprintf (stderr, "  Starting compressing thread # %u; bytes to compress: %llu\n", args->threadId, args->bytesToRead);
     
     // making file names
     char char_thread[100];
@@ -58,11 +58,11 @@ static void *compressFile_orDie(void *data)
     
     // find out how many passes needed to complete the read
     int num_of_reads = 0;
-    int bytes_read = 0;
-    int num_of_even_passes = ceil( (args->bytesToRead) / (args->buffInSize) );
-    int last_pass_size = (args->bytesToRead) - (num_of_even_passes * (args->buffInSize));
+    unsigned long long bytes_read = 0;
+    unsigned long long num_of_even_passes = ceil( (args->bytesToRead) / (args->buffInSize) );
+    unsigned long long last_pass_size = (args->bytesToRead) - (num_of_even_passes * (args->buffInSize));
     if(args->debug){
-        fprintf (stderr, "  Compressing thread #%u; requires: %u equal passes plus 1 unequal pass of size: %u\n", args->threadId, num_of_even_passes, last_pass_size);
+        fprintf (stderr, "  Compressing thread #%u; requires: %llu equal passes plus 1 unequal pass of size: %llu\n", args->threadId, num_of_even_passes, last_pass_size);
     }
     args->buffIn  = malloc_orDie(args->buffInSize);
     args->buffOutSize = ZSTD_CStreamOutSize();
@@ -92,7 +92,7 @@ static void *compressFile_orDie(void *data)
         }
         // if all the bytes that need to be read have been read and processed, exit function
         if( bytes_read == (args->bytesToRead) ){
-            if(args->debug){fprintf (stderr, "  Compressing thread #%u; exiting bytes read %u / %u\n", args->threadId,bytes_read, args->bytesToRead);}
+            if(args->debug){fprintf (stderr, "  Compressing thread #%u; exiting bytes read %llu / %llu\n", args->threadId,bytes_read, args->bytesToRead);}
             fclose_orDie(args->fout);
             fclose_orDie(args->fin);
             ZSTD_freeCCtx(args->cctx);
@@ -102,7 +102,7 @@ static void *compressFile_orDie(void *data)
         }
         size_t read = fread_orDie((args->buffIn), toRead, (args->fin));
         bytes_read += read;
-        if(args->debug){fprintf (stderr, "  Compressing thread #%u; bytes to read %lu; bytes read %lu; in total %u\n", args->threadId,toRead,read,bytes_read);}
+        if(args->debug){fprintf (stderr, "  Compressing thread #%u; bytes to read %lu; bytes read %lu; in total %llu\n", args->threadId,toRead,read,bytes_read);}
         /* Select the flush mode.
          * If the read may not be finished (read == toRead) we use
          * ZSTD_e_continue. If this is the last chunk, we use ZSTD_e_end.
@@ -251,8 +251,8 @@ int main(int argc, const char** argv)
      */
     // may need to fix divisability -> add 1 to last item
     // also with remainder...
-    int bytes_per_thread = (fsize_orDie(file_name) / nbThreads);
-    printf("bytes per thread: %u\n",bytes_per_thread);
+    unsigned long long bytes_per_thread = (fsize_orDie(file_name) / nbThreads);
+    if(debug){printf("bytes per thread: %llu\n",bytes_per_thread);}
 
     fprintf (stderr, "Starting compression of %s with level %d, using %d threads\n", file_name, level, nbThreads);
     char *outName = createOutFilename_orDie(file_name);
@@ -287,8 +287,10 @@ int main(int argc, const char** argv)
     // read into buffer the relevant part of the in file
     // j is -1 because when i = 0, it needs to read the first chunk (whole file) 
     // if the bytes that need to be read is larger than the buffer
-    int temp_size = buff_in_size;
+    unsigned long long temp_size = buff_in_size;
+    if(debug){printf("bytes per thread: %llu\n",bytes_per_thread);}
     if(bytes_per_thread < temp_size){
+        if(debug){printf("trying to allocate %llu (bytes per thread)\n",bytes_per_thread);}
         void* buffInTemp = malloc_orDie(bytes_per_thread);
         fseek(finTemp,i*bytes_per_thread,SEEK_CUR);
         size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
@@ -310,6 +312,7 @@ int main(int argc, const char** argv)
         free(buffInTemp);
     }
     else{
+        if(debug){printf("trying to allocate %llu (temp size)\n",temp_size);}
         void* buffInTemp = malloc_orDie(temp_size);
         for(int j = -1; j < i; j++){
             if( (j+1) == i){
@@ -332,7 +335,7 @@ int main(int argc, const char** argv)
             int flag = 0;
             int num_of_reads = 1;
             int num_of_even_passes = ceil( bytes_per_thread / temp_size );
-            int last_pass_size = bytes_per_thread - (num_of_even_passes * temp_size);
+            unsigned long long last_pass_size = bytes_per_thread - (num_of_even_passes * temp_size);
             while(!flag){
                 if( num_of_reads <= num_of_even_passes ){
                     num_of_reads += 1;
@@ -364,7 +367,6 @@ int main(int argc, const char** argv)
     for (unsigned i = 0; i < nbThreads; i++){
         pthread_join (threads[i], NULL);
     }
-    
 
     /* Open the output file. */
     FILE* const fout = fopen_orDie(outName, "wb");
