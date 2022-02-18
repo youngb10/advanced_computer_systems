@@ -60,8 +60,8 @@ streaming_compression : $(LIB)
 multiple_streaming_compression.o: common.h
 multiple_streaming_compression : $(LIB)
 
-streaming_decompression.o: common.h
-streaming_decompression : $(LIB)
+decompression.o: common.h
+decompression : $(LIB)
 
 streaming_memory_usage.o: common.h
 streaming_memory_usage : $(LIB)

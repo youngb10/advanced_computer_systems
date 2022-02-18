@@ -7,4 +7,4 @@
 # The compression level
 10
 # The file to compress (relative path)
-../very_small_v1.5.2.zip
+test_files/very_small_v1.5.2.zip

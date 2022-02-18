@@ -8,6 +8,9 @@
  * You may select, at your option, one of the above-listed licenses.
  */
 
+// todo: add (lower) limits for buffer size
+// add malloc temp as input?
+
 #include <stdio.h>     // printf
 #include <stdlib.h>    // free
 #include <string.h>    // memset, strcat, strlen
@@ -16,6 +19,7 @@
 #include <math.h>      // ceil
 #include <pthread.h>
 #include <time.h>
+#include <locale.h>
 //#define ZSTD_STATIC_LINKING_ONLY
 // modified version of zstd 1.5.2 examples, streaming_compression_thread_pool
 
@@ -42,7 +46,7 @@ typedef struct compress_args
 static void *compressFile_orDie(void *data)
 {   
     compress_args_t *args = (compress_args_t *)data;
-    fprintf (stderr, "  Starting compressing thread #%u; bytes to compress: %u\n", args->threadId, args->bytesToRead);
+    fprintf (stderr, "  Starting compressing thread # %u; bytes to compress: %u\n", args->threadId, args->bytesToRead);
     
     // making file names
     char char_thread[100];
@@ -89,9 +93,11 @@ static void *compressFile_orDie(void *data)
         // if all the bytes that need to be read have been read and processed, exit function
         if( bytes_read == (args->bytesToRead) ){
             if(args->debug){fprintf (stderr, "  Compressing thread #%u; exiting bytes read %u / %u\n", args->threadId,bytes_read, args->bytesToRead);}
+            fclose_orDie(args->fout);
+            fclose_orDie(args->fin);
             ZSTD_freeCCtx(args->cctx);
             free(args->buffIn);
-            free(args->buffOut);
+            free(args->buffOut);  
             return NULL;
         }
         size_t read = fread_orDie((args->buffIn), toRead, (args->fin));
@@ -157,6 +163,8 @@ static char* createOutFilename_orDie(const char* filename)
 
 int main(int argc, const char** argv)
 {
+    setlocale(LC_ALL, "en_US.UTF-8");
+
     const char* const exeName = argv[0];
     if (argc!=2) {
         printf("wrong arguments\n");
@@ -212,6 +220,7 @@ int main(int argc, const char** argv)
         file_name = line;
         break;        
     }
+    free(buffIn1);
     // fix print statement for pools
     printf("To compress: %s; initial size: %lu bytes\n",file_name,fsize_orDie(file_name));
     printf("  debug: %u\n", debug);
@@ -251,25 +260,15 @@ int main(int argc, const char** argv)
     // not sure why this is a loop, may delete later
     // argc should be 1, so this shouldnt matter... either way why would
     // the number of args matter? maybe if there are multiple files?
-    printf("number of threads entering pthread loop: %u\n",nbThreads);
-    // somehow this is calling itself multiple times...
+    if(debug){printf("number of threads entering pthread loop: %u\n",nbThreads);}
     
+    FILE* finTemp = fopen_orDie(file_name, "rb");
     for (int i = 0; i < nbThreads; i++)
     {
     // need to open n files for n threads
     // don't want to open Nlog(N) files
     // so, will read input file, read the relevant section
     // write that section, and discard the rest. 
-
-    // ** for better memory & reliability may want to chunk the inputs to separate items
-    FILE* finTemp = fopen_orDie(file_name, "rb");
-    //FILE* foutTemp = fopen_orDie(file_name, "wb");
-    void*  const buffInTemp = malloc_orDie(bytes_per_thread);
-    // read into buffer the relevant part of the in file
-    // j is -1 because when i = 0, it needs to read the first chunk 
-    for(int j = -1; j < i; j++){
-        size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
-    }
 
     // archaic way of creating output names, courtesy of C
     int threadId = i;
@@ -279,14 +278,78 @@ int main(int argc, const char** argv)
     strcat(out_name,threadIdChar);      
     char* out_thread_name = createOutFilename_orDie(out_name);
 
-    //printf("char thread %s\n",out_thread_name);
+    // ** for better memory & reliability may want to chunk the inputs to separate items
+    // this breaks for the 40gb file... need to chunk it
+    //FILE* finTemp = fopen_orDie(file_name, "rb");
     // create temporary output to write to, then close and reopen as the input file
     FILE* foutTemp = fopen_orDie(out_thread_name, "wb");
-    fwrite_orDie(buffInTemp, bytes_per_thread, foutTemp);
-    fclose_orDie(foutTemp);
-    free(buffInTemp);
-    FILE* finThread = fopen_orDie(out_thread_name, "rb");
 
+    // read into buffer the relevant part of the in file
+    // j is -1 because when i = 0, it needs to read the first chunk (whole file) 
+    // if the bytes that need to be read is larger than the buffer
+    int temp_size = buff_in_size;
+    if(bytes_per_thread < temp_size){
+        void* buffInTemp = malloc_orDie(bytes_per_thread);
+        fseek(finTemp,i*bytes_per_thread,SEEK_CUR);
+        size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
+        fwrite_orDie(buffInTemp, bytes_per_thread, foutTemp); 
+        // for(int j = -1; j < i; j++){
+        //     if((j+1) == i){
+        //         size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
+        //         fwrite_orDie(buffInTemp, bytes_per_thread, foutTemp); 
+        //     }
+        //     else{
+        //         // is fseek actually faster than reading?
+        //         //size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
+        //         fseek(finTemp,bytes_per_thread,SEEK_CUR);
+        //     }   
+        // }
+        fseek(finTemp,0,SEEK_SET);
+        //fclose_orDie(finTemp);
+        fclose_orDie(foutTemp);
+        free(buffInTemp);
+    }
+    else{
+        void* buffInTemp = malloc_orDie(temp_size);
+        for(int j = -1; j < i; j++){
+            if( (j+1) == i){
+                int flag = 0;
+                int num_of_reads = 1;
+                int num_of_even_passes = ceil( bytes_per_thread / temp_size );
+                int last_pass_size = bytes_per_thread - (num_of_even_passes * temp_size);
+                while(!flag){
+                    if( num_of_reads <= num_of_even_passes ){
+                        num_of_reads += 1;
+                    }
+                    else{
+                        temp_size = last_pass_size;
+                        flag = 1;
+                    }
+                    size_t readTemp = fread_orDie(buffInTemp, temp_size, finTemp);
+                    fwrite_orDie(buffInTemp, temp_size, foutTemp);   
+                }   
+            }
+            int flag = 0;
+            int num_of_reads = 1;
+            int num_of_even_passes = ceil( bytes_per_thread / temp_size );
+            int last_pass_size = bytes_per_thread - (num_of_even_passes * temp_size);
+            while(!flag){
+                if( num_of_reads <= num_of_even_passes ){
+                    num_of_reads += 1;
+                }
+                else{
+                    temp_size = last_pass_size;
+                    flag = 1;
+                }
+                fseek(finTemp,temp_size,SEEK_CUR);
+            }
+        }
+        fseek(finTemp,0,SEEK_SET);
+        //fclose_orDie(finTemp);
+        fclose_orDie(foutTemp);
+        free(buffInTemp);
+    }
+    FILE* finThread = fopen_orDie(out_thread_name, "rb");
     args[i].threadId = i;
     args[i].debug = debug;
     args[i].fin = finThread;

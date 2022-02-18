@@ -1,11 +1,3 @@
 zstd-1.5.2/
-v1.5.2.zip
-test.zip
-very_small_v1.5.2.zip
-small_github_users_sample_set.tar
-small_github_users_sample_set.tar.zst
-medium_test.zip
-medium_test.zip.zst
-large_test.zip
-large_test.zip.zst
 files/temp/
+files/test_files/
