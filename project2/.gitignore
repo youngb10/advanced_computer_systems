@@ -1,5 +1,5 @@
-files/temp*
+files/temp/*
 !files/temp/.gitkeep
-files/test_files/
+files/test_files/*
 !files/test_files/.gitkeep
 !files/test_files/small_github_users_sample_set.tar
