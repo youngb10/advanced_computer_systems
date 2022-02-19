@@ -188,6 +188,7 @@ int main(int argc, const char** argv)
     void*  const buffIn1  = malloc_orDie(buffInSize1);
     size_t const toRead1 = buffInSize1;
     size_t read1 = fread_orDie(buffIn1, toRead1, fin_parameters);
+    fclose_orDie(fin_parameters);
     
     // https://www.educative.io/edpresso/splitting-a-string-using-strtok-in-c
     int debug;
@@ -295,17 +296,6 @@ int main(int argc, const char** argv)
         fseek(finTemp,i*bytes_per_thread,SEEK_CUR);
         size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
         fwrite_orDie(buffInTemp, bytes_per_thread, foutTemp); 
-        // for(int j = -1; j < i; j++){
-        //     if((j+1) == i){
-        //         size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
-        //         fwrite_orDie(buffInTemp, bytes_per_thread, foutTemp); 
-        //     }
-        //     else{
-        //         // is fseek actually faster than reading?
-        //         //size_t readTemp = fread_orDie(buffInTemp, bytes_per_thread, finTemp);
-        //         fseek(finTemp,bytes_per_thread,SEEK_CUR);
-        //     }   
-        // }
         fseek(finTemp,0,SEEK_SET);
         //fclose_orDie(finTemp);
         fclose_orDie(foutTemp);
@@ -315,6 +305,7 @@ int main(int argc, const char** argv)
         if(debug){printf("trying to allocate %llu (temp size)\n",temp_size);}
         void* buffInTemp = malloc_orDie(temp_size);
         for(int j = -1; j < i; j++){
+            // now on lass pass, we want to save everything past this
             if( (j+1) == i){
                 int flag = 0;
                 int num_of_reads = 1;
@@ -332,6 +323,7 @@ int main(int argc, const char** argv)
                     fwrite_orDie(buffInTemp, temp_size, foutTemp);   
                 }   
             }
+            // seek through the file until you want to start saving data
             int flag = 0;
             int num_of_reads = 1;
             int num_of_even_passes = ceil( bytes_per_thread / temp_size );

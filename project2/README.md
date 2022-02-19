@@ -7,8 +7,6 @@
 *** Thanks again again! Now go create something AMAZING! :D
 -->
 
-
-
 <!-- PROJECT SHIELDS -->
 <!--
 *** I'm using markdown "reference style" links for readability.
@@ -126,57 +124,43 @@ This is an example of how to list things you need to use the software and how to
   sudo apt update
   sudo apt install zstd
   ```
-[https://github.com/facebook/zstd/releases/tag/v1.1.3](https://github.com/facebook/zstd/releases/tag/v1.1.3)
-2. Download and expand sample set 
+[https://github.com/Nesathurai/advanced_computer_systems.git](https://github.com/Nesathurai/advanced_computer_systems.git)
+2. Download github repo 
   ```sh
-  wget https://github.com/facebook/zstd/releases/download/v1.1.3/github_users_sample_set.tar.zst
-  zstd -d github_users_sample_set.tar.zst
-  tar xf github_users_sample_set.tar
+  git clone https://github.com/Nesathurai/advanced_computer_systems.git
   ```
-3. benchmark sample set with and without dictionary compression
+3. Go to cloned folder
   ```sh 
-  zstd -b1 -r github
-  zstd --train -r github
-  zstd -b1 -r github -D dictionary
+  cd advanced_computer_systems
+  cd project2
+  cd files
   ```
-4. rebuild sample set archive
+4. Compress small file 
   ```sh
-  tar cf github_users_sample_set.tar github
-  zstd -f --ultra -22 github_users_sample_set.tar
+  make pthreads_streaming_compression
+  ./pthreads_streaming_compression inputs_small.txt
   ```
-5. [download github data](https://www.gharchive.org/)
-```sh 
-   wget https://data.gharchive.org/2015-01-{01..31}-{0..23}.json.gz
-```
-6. [unzip gz files](https://askubuntu.com/questions/693409/how-can-i-extract-multiple-gzip-files-in-directory-and-subdirectories)
-```sh
-gunzip -dk *.gz
-```
+5. Decompress small file 
+  ```sh
+  make decompression
+  ./decompression test_files/small_github_users_sample_set.tar.zst
+  ```
+6. Compress custom file ** Note: inputs_very_small, inputs_medium and inputs_large's files were not included to save space **
+  While in files folder, create a new text file called:
+  inputs_custom.txt
+  Open inputs_small.txt, and copy the contents to inputs_custom.txt
+  Then, change the last line to the desired file name
+  Change the buffer size to desired value (around 100mb is good, too small and the program will not run)
+  Change the desired number of threads (best performance will be the maximum number of physical threads on your system)
+  Change the compression level to the desired level
+  Then:
+  ```sh
+  ./pthreads_streaming_compression inputs_custom.txt
+  ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -206,8 +190,7 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 ## Acknowledgments
 
 * [README Template](https://github.com/othneildrew/Best-README-Template)
-* [Intel Intrinsic's Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
-* []()
+* [Facebook ZSTD](https://github.com/facebook/zstd)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

@@ -1,10 +1,10 @@
 # Debugging Printing Enabled
 0
 # The number of threads
-2
+12
 # The buffer size in bytes
-1000000000
+100000000
 # The compression level
-10
+100
 # The file to compress (relative path)
 test_files/medium_test.zip
