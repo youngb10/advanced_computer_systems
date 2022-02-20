@@ -1,122 +1,15 @@
 <div id="top"></div>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again again! Now go create something AMAZING! :D
--->
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
-<h3 align="center">project_title</h3>
-
-  <p align="center">
-    project_description
-    <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
-  </p>
-</div>
-
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+The objective of this project is to implement a C/C++ module that uses multiple threads to compress an input data stream. The input file is split into several files, and each file is dispatched to another thread to be broken down further and compressed. The compressed files are then recombined into a compressed file in the same order as the input. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-### Built With
-
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
+### Installation and Usage
 
 [https://www.howtoinstall.me/ubuntu/18-04/zstd/](https://www.howtoinstall.me/ubuntu/18-04/zstd/)
 1. Install zstd by entering the following commands in the terminal:
@@ -125,6 +18,7 @@ This is an example of how to list things you need to use the software and how to
   sudo apt install zstd
   ```
 [https://github.com/Nesathurai/advanced_computer_systems.git](https://github.com/Nesathurai/advanced_computer_systems.git)
+  
 2. Download github repo 
   ```sh
   git clone https://github.com/Nesathurai/advanced_computer_systems.git
@@ -135,22 +29,25 @@ This is an example of how to list things you need to use the software and how to
   cd project2
   cd files
   ```
-4. Compress small file 
+4. To compress a small file: 
   ```sh
   make pthreads_streaming_compression
   ./pthreads_streaming_compression inputs_small.txt
   ```
-5. Decompress small file 
+5. To decompress a small file:
+  
+  This is not multithreaded, only do this to verify correct compression. 
   ```sh
   make decompression
   ./decompression test_files/small_github_users_sample_set.tar.zst
   ```
-6. Compress custom file ** Note: inputs_very_small, inputs_medium and inputs_large's files were not included to save space **
+6. Compress custom file:
+  
   While in files folder, create a new text file called:
   inputs_custom.txt
   Open inputs_small.txt, and copy the contents to inputs_custom.txt
   Then, change the last line to the desired file name
-  Change the buffer size to desired value (around 100mb is good, too small and the program will not run)
+  Change the buffer size to desired value (around 10MB is good, too small and the program will not run properly)
   Change the desired number of threads (best performance will be the maximum number of physical threads on your system)
   Change the compression level to the desired level
   Then:
@@ -162,13 +59,76 @@ This is an example of how to list things you need to use the software and how to
 
 
 
+<!-- STRUCTURE -->
+## Structure
+
+The overall structure of the program entails the main thread splitting the file to be compressed into several smaller files, dispatching one thread to each file to compress, and reassembling the compressed files in the correct order to obtain a compressed version of the original file. 
+
+The program starts by reading the data from the inputs file, such as the number of worker threads and the size of the compression buffer, then using that data to split the file that will be compressed into several smaller files. The number of smaller files that are created is the same as the total number of threads. Each thread will compress one of these smaller files. 
+
+Before compression, the main thread decides how many bytes each of the worker threads will handle. A struct is used to deliver the necessary data to the threads when they are created, and each of the threads is given an equal part of the original file. Each thread then works through the compression in parallel. 
+
+Each smaller file that is being compressed is split into blocks that are the size of the compression buffer. The threads compress each block and continuously update their output file. Each thread has its own output file which will be the compressed version of each thread's input file. The main thread then reassembles these output files from each worker thread to a compressed version of the original file.
+
+The compressed file is output, and all used memory is released. The program ends by outputting statistics of the compression including the time taken, the total size of the compressed file, and the compression ratio (which is the input size over the output size). 
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-<!-- LICENSE -->
-## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+<!-- Experimental Results -->
+## Experimental Results
+
+The following data was obtained using a Virtual Linux Machine with 4 cores, each capable of running two threads, and 16GB of memory. 
+
+The graph below displays the time it took the program to compress a 14MB file with various numbers of threads and a compression level of 50.
+
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/githubusers.png" alt="14MB" width="1276" height="828">
+  </a>
+<div align="left">
+
+The first couple additional threads improve performance greatly. However, after 5 threads are implemented, there are no noticable improvements. This is possibly because the additional overhead that is necessary for more threads is enough to counteract the marginal gained compression performance. 
+  
+  
+The graph below displays the time it took the program to compress a 250MB file with various numbers of threads and a compression level of 16.
+  
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/silesiamb.png" alt="250MB" width="1280" height="824">
+  </a>
+<div align="left">
+  
+Similar to the 14MB file, the first few additional threads improve performance greatly. Improvements are seen up until 6 threads are used. As expected, there are no performance gains past 8 threads, as that is the maximum that this machine could simultaneously run. 
+  
+  
+The graph below displays the time it took the program to compress a 1.2GB file with various numbers of threads and a compression level of 12.
+  
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/silesiagb.png" alt="1.2GB" width="1282" height="826">
+  </a>
+<div align="left">
+  
+With the largest graphed file, improvements are seen up until the eighth thread. This is expected, as the ratio of overhead to compression decreases as the file sizes increase. Interestingly, the performance decreases as too many threads are added. This could be from increased overhead either from thread creation or the need for the operating system to more regularly swap out threads. 
+  
+  
+A significantly larger file, sized at 36GB, was also compressed using this program. The total time for compression of the 36GB file was approximately 6 minutes, utilizing 12 threads on a machine which had a full 8 cores available. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- Conclusion -->
+## Conclusion
+
+As hardware improvements gradually slow, one of the most significant ways to improve performance is through software-level parallelism. This is precisely what multithreading accomplishes. Multithreading is particularly useful and efficient in cases such as these, where there is a large amount of data that has little to no dependencies. Instead of a single thread moving through the independent calculations and compression, multiple threads are able to perform the same calculations in parallel without losses. 
+
+Despite the fact that multithreading is a great method of improving performance, there are holdups. First, and perhaps most importantly, only a certain number of additional threads will be useful. Most computers cannot run more than 16 threads simultaneously, with 8 cores and 2 threads running in each. This is also supported by our experimental results, where the marginal benefit of each additional thread was inconsequential after 8 (4 cores with 2 threads each). Also, there is additional overhead required for dispatching these additional threads. When the data has dependencies, there are also additional steps that must be taken to preserve the accuracy of the output. However, these downsides are nothing compared to the benefits in many scenarios, and multithreading is a crucial tool in today's computing environment. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -177,7 +137,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Allan Nesathurai - ahnesathurai@gmail.com - 289 689 4248
+Allan Nesathurai - ahnesathurai@gmail.com
 Bennett Young - bennett.young@comcast.net
 
 Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://github.com/Nesathurai/advanced_computer_systems)
@@ -190,11 +150,10 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 ## Acknowledgments
 
 * [README Template](https://github.com/othneildrew/Best-README-Template)
-* [Facebook ZSTD](https://github.com/facebook/zstd)
+* [ZSTD v1.5.2 Manual](https://raw.githack.com/facebook/zstd/release/doc/zstd_manual.html)
+* [POSIX Thread Programming](https://hpc-tutorials.llnl.gov/posix/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
