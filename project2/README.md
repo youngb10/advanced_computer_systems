@@ -87,7 +87,6 @@ The graph below displays the time it took the program to compress a 14MB file wi
   <a href="https://github.com/youngb10/advanced_computer_systems/project2">
     <img src="images/githubusers.png" alt="14MB" width="1276" height="828">
   </a>
-<p align="right">(<a href="#top">back to top</a>)</p>
 <div align="left">
 
 The first couple additional threads improve performance greatly. However, after 5 threads are implemented, there are no noticable improvements. This is possibly because the additional overhead that is necessary for more threads is enough to counteract the marginal gained compression performance. 
@@ -100,7 +99,6 @@ The graph below displays the time it took the program to compress a 250MB file w
   <a href="https://github.com/youngb10/advanced_computer_systems/project2">
     <img src="images/silesiamb.png" alt="250MB" width="1280" height="824">
   </a>
-<p align="right">(<a href="#top">back to top</a>)</p>
 <div align="left">
   
 Similar to the 14MB file, the first few additional threads improve performance greatly. Improvements are seen up until 6 threads are used. As expected, there are no performance gains past 8 threads, as that is the maximum that this machine could simultaneously run. 
@@ -113,7 +111,6 @@ The graph below displays the time it took the program to compress a 1.2GB file w
   <a href="https://github.com/youngb10/advanced_computer_systems/project2">
     <img src="images/silesiagb.png" alt="1.2GB" width="1282" height="826">
   </a>
-<p align="right">(<a href="#top">back to top</a>)</p>
 <div align="left">
   
 With the largest graphed file, improvements are seen up until the eighth thread. This is expected, as the ratio of overhead to compression decreases as the file sizes increase. Interestingly, the performance decreases as too many threads are added. 
