@@ -34,12 +34,14 @@ The objective of this project is to implement a C/C++ module that uses multiple 
   ./pthreads_streaming_compression inputs_small.txt
   ```
 5. To decompress a small file:
+  
   This is not multithreaded, only do this to verify correct compression. 
   ```sh
   make decompression
   ./decompression test_files/small_github_users_sample_set.tar.zst
   ```
-6. Compress custom file ** Note: inputs_very_small, inputs_medium and inputs_large's files were not included to save space **
+6. Compress custom file:
+  
   While in files folder, create a new text file called:
   inputs_custom.txt
   Open inputs_small.txt, and copy the contents to inputs_custom.txt
@@ -55,10 +57,6 @@ The objective of this project is to implement a C/C++ module that uses multiple 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 5. Enter how many simultaneous threads you would like once running the program. 
-
-**Unfortunately, we were unable to get the ZSTD compression to run without seg faults. The program's intended execution is detailed in the 'Structure' section.**
-
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
