@@ -86,7 +86,7 @@ The graph below displays the time it took the program to compress a 14MB file wi
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/githubusers.png" alt="14MB" width="1276" height="828" max-width: 100%>
+    <img src="images/githubusers.png" alt="14MB" width="900" >
   </a>
 <div align="left">
 
@@ -98,7 +98,7 @@ The graph below displays the time it took the program to compress a 250MB file w
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/silesiamb.png" alt="250MB" width="1280" height="824">
+    <img src="images/silesiamb.png" alt="250MB" width="900">
   </a>
 <div align="left">
   
@@ -110,7 +110,7 @@ The graph below displays the time it took the program to compress a 1.2GB file w
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/silesiagb.png" alt="1.2GB" width="1282" height="826">
+    <img src="images/silesiagb.png" alt="1.2GB" width="900" >
   </a>
 <div align="left">
   
