@@ -70,7 +70,7 @@ Before compression, the main thread decides how many bytes each of the worker th
 
 Each smaller file that is being compressed is split into blocks that are the size of the compression buffer. The threads compress each block and continuously update their output file. Each thread has its own output file which will be the compressed version of each thread's input file. The main thread then reassembles these output files from each worker thread to a compressed version of the original file.
 
-The compressed file is output, and all used memory is released. The program ends by outputting statistics of the compression including the time taken, the total size of the compressed file, and the compression ratio (which is the input size over the output size). 
+The compressed file is output, and all used memory is released. The program ends by outputting statistics of the compression including the time taken, the total size of the compressed file, and the compression ratio (which is the output size over the input size). 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -85,7 +85,7 @@ The graph below displays the time it took the program to compress a 14MB file wi
 
 <br />
 <div align="center">
-  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
     <img src="images/githubusers.png" alt="14MB" width="1276" height="828">
   </a>
 <div align="left">
@@ -97,7 +97,7 @@ The graph below displays the time it took the program to compress a 250MB file w
   
 <br />
 <div align="center">
-  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
     <img src="images/silesiamb.png" alt="250MB" width="1280" height="824">
   </a>
 <div align="left">
@@ -109,7 +109,7 @@ The graph below displays the time it took the program to compress a 1.2GB file w
   
 <br />
 <div align="center">
-  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
     <img src="images/silesiagb.png" alt="1.2GB" width="1282" height="826">
   </a>
 <div align="left">
