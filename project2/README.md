@@ -3,7 +3,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-The objective of this project is to implement a C/C++ module that uses multiple threads to compress an input data stream. The input file is split into 16kB chunks, and each 16kB chunk is dispatched to another thread to be compressed. The compressed blocks are then read back in order and written to an output file. 
+The objective of this project is to implement a C/C++ module that uses multiple threads to compress an input data stream. The input file is split into several files, and each file is dispatched to another thread to be broken down further and compressed. The compressed files are then recombined into a compressed file in the same order as the input. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -11,17 +11,48 @@ The objective of this project is to implement a C/C++ module that uses multiple 
 
 ### Installation and Usage
 
-1. Clone the GitHub repo for Project 2 and open the folder.
-
-2. Verify that ZSTD is installed. Verify you are on a Linux OS. 
-
-3. Download silesia.txt (~240MB uncompressed) from the ECSE-4961 Webex Teams, place it in the Project 2 directory.
-
-4. Run the following commands inside the Project 2 directory to compile:
-  ```sh
-  gcc -pthread -O3 main.c -lzstd
-  ./a.out FILE
+[https://www.howtoinstall.me/ubuntu/18-04/zstd/](https://www.howtoinstall.me/ubuntu/18-04/zstd/)
+1. Install zstd by entering the following commands in the terminal:
+  ```sh 
+  sudo apt update
+  sudo apt install zstd
   ```
+[https://github.com/Nesathurai/advanced_computer_systems.git](https://github.com/Nesathurai/advanced_computer_systems.git)
+2. Download github repo 
+  ```sh
+  git clone https://github.com/Nesathurai/advanced_computer_systems.git
+  ```
+3. Go to cloned folder
+  ```sh 
+  cd advanced_computer_systems
+  cd project2
+  cd files
+  ```
+4. To compress a small file: 
+  ```sh
+  make pthreads_streaming_compression
+  ./pthreads_streaming_compression inputs_small.txt
+  ```
+5. To decompress a small file:
+  This is not multithreaded, only do this to verify correct compression. 
+  ```sh
+  make decompression
+  ./decompression test_files/small_github_users_sample_set.tar.zst
+  ```
+6. Compress custom file ** Note: inputs_very_small, inputs_medium and inputs_large's files were not included to save space **
+  While in files folder, create a new text file called:
+  inputs_custom.txt
+  Open inputs_small.txt, and copy the contents to inputs_custom.txt
+  Then, change the last line to the desired file name
+  Change the buffer size to desired value (around 10MB is good, too small and the program will not run properly)
+  Change the desired number of threads (best performance will be the maximum number of physical threads on your system)
+  Change the compression level to the desired level
+  Then:
+  ```sh
+  ./pthreads_streaming_compression inputs_custom.txt
+  ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 5. Enter how many simultaneous threads you would like once running the program. 
 
@@ -34,15 +65,15 @@ The objective of this project is to implement a C/C++ module that uses multiple 
 <!-- STRUCTURE -->
 ## Structure
 
-The overall structure of the program entails one thread reading data from the input file, allocating space in memory for the compression, receiving compressed blocks, and writing the compressed blocks to the output, while a number of other threads implements the ZSTD compression. The number of threads is user configurable, with a minimum of two. The 'silesia.txt' file is used for compression. 
+The overall structure of the program entails the main thread splitting the file to be compressed into several smaller files, dispatching one thread to each file to compress, and reassembling the compressed files in the correct order to obtain a compressed version of the original file. 
 
-The program starts by reading data in from the file to be compressed. The number of total blocks that need to be compressed is determined using the size of this file. The program takes input from the user on how many threads should be created. Using these values, other critical information is calculated such as the number of blocks each thread will handle, the size of the last block, and the thread which will handle the last block. 
+The program starts by reading the data from the inputs file, such as the number of worker threads and the size of the compression buffer, then using that data to split the file that will be compressed into several smaller files. The number of smaller files that are created is the same as the total number of threads. Each thread will compress one of these smaller files. 
 
-The threads that will be used for compression are then created. Because a thread can typically only read in one argument, a new struct must be created to hold all of the required information for each thread. This information includes the thread id, the memory locations of the input and output, and other values previously calculated. All of the threads that do the compression are forked at the same time, while the original thread is used for controls and gathering the output blocks. 
+Before compression, the main thread decides how many bytes each of the worker threads will handle. A struct is used to deliver the necessary data to the threads when they are created, and each of the threads is given an equal part of the original file. Each thread then works through the compression in parallel. 
 
-In the compression function which each compression thread executes, the data is first retrieved from the struct. The data from the struct is used to determine which threads do which blocks from the input, and the ZSTD_compress functions are run. Once the compression is finished, a global array is updated which allows the main thread to see the progress. Each thread is responsible for independent elements, so no threads write over each other. 
+Each smaller file that is being compressed is split into blocks that are the size of the compression buffer. The threads compress each block and continuously update their output file. Each thread has its own output file which will be the compressed version of each thread's input file. The main thread then reassembles these output files from each worker thread to a compressed version of the original file.
 
-Back in the original thread, a while loop is constructed so that the thread will only continue and write to the output when the next compressed block is ready. This process repeats for as many blocks as there are, receiving the length of each compressed block from the global array. After the main thread writes all of the blocks to the output file, both the input and output files are closed, and the program ends. 
+The compressed file is output, and all used memory is released. The program ends by outputting statistics of the compression including the time taken, the total size of the compressed file, and the compression ratio (which is the input size over the output size). 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -60,7 +91,9 @@ We were unable to obtain experimental results due to the seg faults that were oc
 <!-- Conclusion -->
 ## Conclusion
 
-As hardware improvements gradually slow, one of the most significant ways to improve performance is through software-level parallelism. This is precisely what multithreading accomplishes. Multithreading is particularly useful and efficient in cases such as these, where there is a large amount of data that has no dependencies. Instead of a single thread moving through the independent calculations and compression, multiple threads are able to perform the same calculations in parallel without losses. There is some amount of overhead that is involved with creating and managing threads, especially since the operating system has to get involved, but that overhead is absolutely worth it when there are large amounts ofcalculations to be done that are independent of each other. 
+As hardware improvements gradually slow, one of the most significant ways to improve performance is through software-level parallelism. This is precisely what multithreading accomplishes. Multithreading is particularly useful and efficient in cases such as these, where there is a large amount of data that has little to no dependencies. Instead of a single thread moving through the independent calculations and compression, multiple threads are able to perform the same calculations in parallel without losses. 
+
+Despite the fact that multithreading is a great method of improving performance, there are holdups. First, and perhaps most importantly, only a certain number of additional threads will be useful. Most computers cannot run more than 16 threads simultaneously, with 8 cores and 2 threads running in each. This is also supported by our experimental results, where the marginal benefit of each additional thread was inconsequential after 8 (4 cores with 2 threads each). Also, there is additional overhead required for dispatching these additional threads. When the data has dependencies, there are also additional steps that must be taken to preserve the accuracy of the output. However, these downsides are nothing compared to the benefits in many scenarios, and multithreading is a crucial tool in today's computing environment. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -69,7 +102,7 @@ As hardware improvements gradually slow, one of the most significant ways to imp
 <!-- CONTACT -->
 ## Contact
 
-Allan Nesathurai - ahnesathurai@gmail.com - 289 689 4248
+Allan Nesathurai - ahnesathurai@gmail.com
 Bennett Young - bennett.young@comcast.net
 
 Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://github.com/Nesathurai/advanced_computer_systems)
@@ -82,13 +115,10 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 ## Acknowledgments
 
 * [README Template](https://github.com/othneildrew/Best-README-Template)
-* [Intel Intrinsic's Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
 * [ZSTD v1.5.2 Manual](https://raw.githack.com/facebook/zstd/release/doc/zstd_manual.html)
 * [POSIX Thread Programming](https://hpc-tutorials.llnl.gov/posix/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
