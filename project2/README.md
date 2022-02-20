@@ -56,8 +56,6 @@ The objective of this project is to implement a C/C++ module that uses multiple 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-5. Enter how many simultaneous threads you would like once running the program. 
-
 
 
 <!-- STRUCTURE -->
@@ -80,7 +78,45 @@ The compressed file is output, and all used memory is released. The program ends
 <!-- Experimental Results -->
 ## Experimental Results
 
-We were unable to obtain experimental results due to the seg faults that were occurring. 
+The following data was obtained using a Virtual Linux Machine with 4 cores, each capable of running two threads, and 16GB of memory. 
+
+The graph below displays the time it took the program to compress a 14MB file with various numbers of threads and a compression level of 50.
+
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/githubusers.png" alt="14MB" width="1276" height="828">
+  </a>
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+The first couple additional threads improve performance greatly. However, after 5 threads are implemented, there are no noticable improvements. This is possibly because the additional overhead that is necessary for more threads is enough to counteract the marginal gained compression performance. 
+  
+  
+The graph below displays the time it took the program to compress a 250MB file with various numbers of threads and a compression level of 16.
+  
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/silesiamb.png" alt="250MB" width="1280" height="824">
+  </a>
+<p align="right">(<a href="#top">back to top</a>)</p>
+  
+Similar to the 14MB file, the first few additional threads improve performance greatly. Improvements are seen up until 6 threads are used. As expected, there are no performance gains past 8 threads, as that is the maximum that this machine could simultaneously run. 
+  
+  
+The graph below displays the time it took the program to compress a 1.2GB file with various numbers of threads and a compression level of 12.
+  
+<br />
+<div align="center">
+  <a href="https://github.com/youngb10/advanced_computer_systems/project2">
+    <img src="images/silesiagb.png" alt="1.2GB" width="1282" height="826">
+  </a>
+<p align="right">(<a href="#top">back to top</a>)</p>
+  
+With the largest graphed file, improvements are seen up until the eighth thread. This is expected, as the ratio of overhead to compression decreases as the file sizes increase. Interestingly, the performance decreases as too many threads are added. 
+  
+  
+A significantly larger file, sized at 36GB, was also compressed using this program. The total time for compression of the 36GB file was approximately 6 minutes, utilizing 12 threads on a machine which had a full 8 cores available. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
