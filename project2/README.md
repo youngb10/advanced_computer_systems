@@ -86,7 +86,7 @@ The graph below displays the time it took the program to compress a 14MB file wi
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/githubusers.png" alt="14MB" width="1276" height="828">
+    <img src="images/githubusers.png" alt="14MB" width="1276" height="828" max-width: 100%>
   </a>
 <div align="left">
 
@@ -117,7 +117,7 @@ The graph below displays the time it took the program to compress a 1.2GB file w
 With the largest graphed file, improvements are seen up until the eighth thread. This is expected, as the ratio of overhead to compression decreases as the file sizes increase. Interestingly, the performance decreases as too many threads are added. This could be from increased overhead either from thread creation or the need for the operating system to more regularly swap out threads. 
   
   
-A significantly larger file, sized at 36GB, was also compressed using this program. The total time for compression of the 36GB file was approximately 6 minutes, utilizing 12 threads on a machine which had a full 8 cores available. 
+A significantly larger file, sized at 36GB, was also compressed using this program. The total time for compression of the 36GB file was approximately 6 minutes, utilizing 12 threads on a machine with 12 hardware threads.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
