@@ -1,0 +1,4 @@
+# Debugging Printing Enabled 
+1
+# The name of the input file (only accepts text files currently)
+data/Small-Size-Column.txt
