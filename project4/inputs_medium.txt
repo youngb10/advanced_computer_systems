@@ -1,6 +1,6 @@
 # Debugging Printing Enabled 
 0
 # The name of the input file (only accepts text files currently)
-data/Small-Size-Column.txt
+data/Medium-Size-Column.txt
 # operation: compress, decompress, compress then decompress (0, 1, 2)
 2
