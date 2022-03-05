@@ -278,7 +278,8 @@ void compress_better(std::ifstream &input, std::ofstream &output, std::unordered
     
     std::string word;
     std::size_t key;
-
+    //int key;
+    //std::cout << "key size ___ " << sizeof(key) << std::endl;
     // take dictionary, then assign new values
     
     //duration<double, std::milli> find_time;
@@ -295,8 +296,12 @@ void compress_better(std::ifstream &input, std::ofstream &output, std::unordered
             // find value using key
             std::unordered_map<std::string, std::size_t>::iterator citr;
             citr = dict_rev.find(word);
+            //int convertdata = static_cast<int>(data);
+
+            //std::cout << "size: " << sizeof(citr->second) << std::endl;
             // now, create output 
             output << citr->second << std::endl;
+            //output << val << std::endl;
             if(debug){std::cout << "Key: " << key << " Value: " << word << std::endl;}
         }
         //std::cout << find_time.count() / insert_time.count() << std::endl;
@@ -431,6 +436,7 @@ int main(int argc, char *argv[])
 
     // compress file and construct dictionary
     // add optimization where most frequent words use smallest key 
+    //   most number of keys is less than 200,000
     construct_dict_better(input_file, dict, dict_rev, debug);
     compress_better(input, output, dict, dict_rev, debug);
     //print_dict(dict);
