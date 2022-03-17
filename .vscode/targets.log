@@ -1,0 +1,186 @@
+make all -f /home/allan/advanced_computer_systems/rpi/ -C /home/allan/advanced_computer_systems/rpi/ --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2014 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Thu Mar 17 16:17:19 2022
+
+# Variables
+
+# environment
+RUNLEVEL = 3
+# environment
+WSLENV = VSCODE_WSL_EXT_LOCATION/up
+# default
+.SHELLFLAGS := -c
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+NVM_INC = /home/allan/.nvm/versions/node/v16.6.0/include/node
+# environment
+SHELL = /bin/bash
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# environment
+_ = /home/allan/.vscode-server/bin/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/node
+# environment
+GNUMAKEFLAGS := 
+# environment
+XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
+# environment
+ROS_ETC_DIR = /opt/ros/melodic/etc/ros
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+ROS_PACKAGE_PATH = /opt/ros/melodic/share
+# environment
+ROS_PYTHON_VERSION = 2
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+VSCODE_CWD = /mnt/c/Users/Allan Nesathurai/AppData/Local/Programs/Microsoft VS Code
+# environment
+PATH = /home/allan/.vscode-server/bin/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/bin/remote-cli:/home/allan/.local/bin:/home/allan/miniconda3/bin:/home/allan/miniconda3/condabin:/opt/ros/melodic/bin:/home/allan/.nvm/versions/node/v16.6.0/bin:/home/allan/google-cloud-sdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files (x86)/VMware/VMware Player/bin:/mnt/c/Program Files (x86)/Razer/ChromaBroadcast/bin:/mnt/c/Program Files/Razer/ChromaBroadcast/bin:/mnt/c/Python38/Scripts:/mnt/c/Python38:/mnt/c/Program Files/National Instruments/Shared/OpenVINO:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files/MATLAB/R2019b/bin:/mnt/c/ProgramData/Miniconda3:/mnt/c/ProgramData/Miniconda3/Library/mingw-w64/bin:/mnt/c/ProgramData/Miniconda3/Library/usr/bin:/mnt/c/ProgramData/Miniconda3/Library/bin:/mnt/c/ProgramData/Miniconda3/Scripts:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0:/mnt/c/Windows/System32/OpenSSH:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Microsoft SQL Server/110/Tools/Binn:/mnt/c/Users/Allan Nesathurai/Anaconda3:/mnt/c/Users/Allan Nesathurai/Anaconda3/Library/mingw-w64/bin:/mnt/c/Users/Allan Nesathurai/Anaconda3/Library/usr/bin:/mnt/c/Users/Allan Nesathurai/Anaconda3/Library/bin:/mnt/c/Users/Allan Nesathurai/Anaconda3/Scripts:/mnt/c/Users/Allan Nesathurai/AppData/Local/Microsoft/WindowsApps:/mnt/c/Program Files/dotnet:/mnt/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/170/Tools/Binn:/mnt/c/Program Files/PuTTY:/mnt/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/mnt/c/Program Files (x86)/Microsoft SQL Server/80/Tools/Binn:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin:/mnt/c/Program Files/IVI Foundation/VISA/Win64/Bin:/mnt/c/Program Files (x86)/Microsoft SQL Server/100/Tools/Binn:/mnt/c/Program Files (x86)/Microsoft SQL Server/100/DTS/Binn:/mnt/c/Program Files (x86)/National Instruments/Shared/LabVIEW CLI:/mnt/c/Program Files (x86)/IVI Foundation/IVI/bin:/mnt/c/Program Files/IVI Foundation/IVI/bin:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin:/mnt/c/Program Files/nodejs:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Go/bin:/mnt/c/TDM-GCC-64/bin:/mnt/c/Users/Allan Nesathurai/.dotnet/tools:/mnt/c/Program Files (x86)/Bluetooth Command Line Tools/bin:/mnt/c/WINDO:/mnt/c/Program Files/TortoiseSVN/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/Common Files/Quanser/hardware:/mnt/c/Program Files (x86)/Common Files/Quanser/hardware:/mnt/c/Program Files/Quanser/QUARC:/mnt/c/Program Files (x86)/dotnet:/mnt/c/Program Files/MATLAB/MATLAB Runtime/v93/runtime/win64:/mnt/c/Users/Allan Nesathurai/.dotnet/tools:/mnt/c/Users/Allan Nesathurai/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/Allan Nesathurai/AppData/Local/GitHubDesktop/bin:/snap/bin:/home/allan/DrMemory-Linux-2.3.0-1/bin64
+# environment
+ROS_ROOT = /opt/ros/melodic/share/ros
+# environment
+NVM_BIN = /home/allan/.nvm/versions/node/v16.6.0/bin
+# environment
+CONDA_PREFIX = /home/allan/miniconda3
+# environment
+VSCODE_LOG_STACK = false
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+CMAKE_PREFIX_PATH = /opt/ros/melodic
+# environment
+LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+# environment
+ROS_DISTRO = melodic
+# environment
+CONDA_EXE = /home/allan/miniconda3/bin/conda
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/allan/advanced_computer_systems
+# environment
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-2580aff6-c7c2-4ace-84a5-7cfa45ac6270.sock
+# environment
+WSL_INTEROP = /run/WSL/14_interop
+# environment
+PKG_CONFIG_PATH = /opt/ros/melodic/lib/pkgconfig
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/allan
+# environment
+LD_LIBRARY_PATH = /opt/ros/melodic/lib
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+LOGNAME = allan
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+CONDA_PROMPT_MODIFIER = (base) 
+# environment
+NVM_CD_FLAGS = 
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+CONDA_DEFAULT_ENV = base
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+CONDA_SHLVL = 1
+# environment
+SHLVL = 2
+# environment
+USER = allan
+# environment
+NAME = X1-Extreme
+# environment
+ROSLISP_PACKAGE_DIRECTORIES = 
+# environment
+VSCODE_WSL_EXT_LOCATION = /mnt/c/Users/Allan Nesathurai/.vscode/extensions/ms-vscode-remote.remote-wsl-0.64.2
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# environment
+PYTHONPATH = /opt/ros/melodic/lib/python2.7/dist-packages
+# environment
+NVM_DIR = /home/allan/.nvm
+# environment
+ROS_VERSION = 1
+# environment
+ROS_MASTER_URI = http://localhost:11311
+# environment
+LC_ALL = C
+# environment
+CONDA_PYTHON_EXE = /home/allan/miniconda3/bin/python
+# environment
+HOSTTYPE = x86_64
+# environment
+_CE_M = 
+# default
+.RECIPEPREFIX := 
+# environment
+LANG = C
+# environment
+TERM = xterm-256color
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# environment
+WSL_DISTRO_NAME = Ubuntu
+# environment
+_CE_CONDA = 
+# variable set hash-table stats:
+# Load=65/1024=6%, Rehash=0, Collisions=3/69=4%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+
+# No files, no impossibilities in 0 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=1/1024=0%, Rehash=0, Collisions=0/1=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 2 / storage = 47 B / avg = 23 B
+# current buf: size = 8162 B / used = 47 B / count = 2 / avg = 23 B
+
+# strcache performance: lookups = 4 / hit rate = 50%
+# hash-table stats:
+# Load=2/8192=0%, Rehash=0, Collisions=0/4=0%
+# Finished Make data base on Thu Mar 17 16:17:19 2022
+
+ 
+make: *** /home/allan/advanced_computer_systems/rpi/: No such file or directory.  Stop.
+ 
