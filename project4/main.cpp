@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <pthread.h>
 
+
 //namespace fs = std::filesystem;
 using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
@@ -167,7 +168,7 @@ void parse_dict(std::unordered_map<std::size_t, std::string> &umap, std::string 
 }
 
 int is_equal(std::string &input_file, std::string &decompressed_file){
-
+    // fix this with length differences
     // open both files in read mode
     std::ifstream input(input_file);
     std::ifstream decompressed(decompressed_file);
@@ -176,7 +177,7 @@ int is_equal(std::string &input_file, std::string &decompressed_file){
     std::string dword;
     // files SHOULD be equal length... if not then bad
     // may need to implement size checking
-    while(!input.eof()){
+    while(!decompressed.eof()){
         getline(input,cword);
         getline(decompressed,dword);
         if((cword != "") && (dword != "")){
@@ -185,6 +186,7 @@ int is_equal(std::string &input_file, std::string &decompressed_file){
             }
         }
     }
+
     return 1;
 }
 
@@ -208,7 +210,7 @@ void check_file(std::ofstream &file, std::string &file_name){
     }
 }
 
-void construct_params(std::ifstream &params, int &debug, std::string &input_file, std::string &output_file,  int &mode, int &optimization, int &numThreads){
+void construct_params(std::ifstream &params, int &debug, std::string &input_file, std::string &output_file,  int &optimization, int &numThreads){
     // read in debug
     std::string line;
     getline(params,line);
@@ -230,11 +232,6 @@ void construct_params(std::ifstream &params, int &debug, std::string &input_file
     std::size_t found = input_file.find_last_of("/\\");
     output_file = input_file.substr(0,found) + "/" + output_prefix + input_file.substr(found+1);
 
-    // read in mode
-    getline(params,line);
-    getline(params,line);
-    mode = stoi(line);
-    
     // read in optimization 
     getline(params,line);
     getline(params,line);
@@ -247,10 +244,8 @@ void construct_params(std::ifstream &params, int &debug, std::string &input_file
 
     if(debug == 1) std::cout << "Debug: " << debug << std::endl;
     std::cout << "Input File: " << input_file << std::endl;
-    std::cout << "  Size in bytes: " << get_size(input_file) << std::endl;
+    if(debug){std::cout << "  Size in bytes: " << get_size(input_file) << std::endl;}
     std::cout << "Output File: " << output_file << std::endl;
-
-
 }
 
 void construct_decompress_output_file(std::string &input_file, std::string &decomp_output_file){
@@ -304,9 +299,9 @@ void create_dictionary_and_compress(std::ifstream &input, std::ofstream &output,
     }
     if(debug){print_dict(dict);}
 }
-
-void compress_better(std::ifstream &input, std::ofstream &output, std::unordered_map<std::size_t, std::string> dict, std::unordered_map<std::string, std::size_t> dict_rev, int debug){
-    // compress file and construct dictionary 
+// might want to copy dictionary multiple times instead of passing by reference. may be performance issues with pthreads. 
+void compress_better(std::ifstream &input, std::ofstream &output, std::unordered_map<std::size_t, std::string> &dict, std::unordered_map<std::string, std::size_t> &dict_rev, int debug){
+    // compress file  
     
     std::string word;
     std::size_t key;
@@ -327,6 +322,51 @@ void compress_better(std::ifstream &input, std::ofstream &output, std::unordered
             if(debug){std::cout << "Key: " << key << " Value: " << word << std::endl;}
         }
     }
+    if(debug){print_dict(dict);}
+}
+void compress_best(std::string &inPartName, std::string &outPartName, std::unordered_map<std::size_t, std::string> &dict, std::unordered_map<std::string, std::size_t> &dict_rev, int debug){
+    // compress file 
+    // now using FILE instead of streams (must faster)
+    
+    // convert string to char array
+    char inName[inPartName.length() + 1];
+    strcpy(inName, inPartName.c_str());
+    char outName[outPartName.length() + 1];
+    strcpy(outName, outPartName.c_str());
+
+    FILE *inPart; 
+    FILE *outPart;
+    char *line = NULL;
+    size_t len = 0;
+
+    inPart = fopen(inName, "r");
+    if (inPart == NULL) perror ("Error inPart");
+    outPart = fopen(outName, "w");
+    if (outPart == NULL) perror ("Error outPart");
+    
+    std::string word;
+    
+    // take dictionary, then assign new values
+    std::string ckey_str;
+    std::size_t ckey;
+
+    while(getline(&line, &len, inPart) != -1){
+        // read in value
+        word = strtok(line, "\n");        
+        if(word != ""){
+            // find value using key
+            std::unordered_map<std::string, std::size_t>::iterator citr;
+            citr = dict_rev.find(word);
+            int size = word.length();
+            char val[size+1+2];
+            std::sprintf(val,"%d",(int)citr->second);
+            fputs ( val, outPart);
+            fputc ( '\n', outPart);
+            if(debug){std::cout << "Key: " << citr->first << " Value: " << word << std::endl;}
+        }
+    }
+    fclose(inPart);
+    fclose(outPart);
     if(debug){print_dict(dict);}
 }
 
@@ -396,6 +436,7 @@ void construct_dict_better(std::string input_file, std::unordered_map<std::size_
                 dict_rev_freq.insert(make_pair(word,0));
             }
         }
+        else{break;}
         //std::cout << find_time.count() / insert_time.count() << std::endl;
         //delta("  compression; time to compress line");
     }
@@ -420,21 +461,77 @@ void construct_dict_better(std::string input_file, std::unordered_map<std::size_
 
 }
 
+void construct_dict_best(std::string input_file, std::unordered_map<std::size_t, std::string> &dict, std::unordered_map<std::string, std::size_t> &dict_rev, int &numElems, int debug){
+    // replace ifstream with FILE*
+    std::unordered_map<std::string, std::size_t> dict_rev_freq;
+    
+    // convert string to char array
+    char inName[input_file.length() + 1];
+    strcpy(inName, input_file.c_str());
+
+    FILE *inFile; 
+    char *line = NULL;
+    size_t len = 0;
+
+    inFile = fopen(inName, "r");
+    if (inFile == NULL) perror ("Error opening file");
+    // go through entire file 
+    // compress file and construct dictionary 
+    std::string word;
+    while(getline(&line, &len, inFile) != -1){
+        // read in value
+        word = strtok(line, "\n");
+        if(word != ""){
+            numElems++;
+            int found = 0;
+            // using a reverse map to search for values since iterating is extremely slow
+            std::unordered_map<std::string, std::size_t>::iterator citr;
+            
+            citr = dict_rev_freq.find(word);
+            if(citr != dict_rev_freq.end()){
+                found = 1;
+                citr->second += 1;
+            }
+            if(!found){
+                // if not found, add key to dict
+                dict_rev_freq.insert(make_pair(word,0));
+            }
+        }
+        else{break;}
+    }
+    // https://stackoverflow.com/questions/31323135/sort-an-unordered-map-using-sort
+    std::vector<std::pair<std::string, size_t>> sorted_pair(dict_rev_freq.begin(), dict_rev_freq.end());
+    sort(sorted_pair.begin(), sorted_pair.end(), comp);
+    fclose(inFile);
+
+    // construct dictionary with low to high frequency corresponding to large to small numbers
+    std::size_t dict_key = 0;
+
+    std::vector<std::pair<std::string, size_t>>::iterator itr;
+    for (itr = sorted_pair.begin(); itr != sorted_pair.end(); itr++)
+    {
+        dict.insert(make_pair(dict_key,itr->first));
+        dict_rev.insert(make_pair(itr->first,dict_key));
+        dict_key += 1;
+    }
+    //print_dict(dict);
+
+}
+
 static void *compress_multithread(void *data){
 
     // simply call compress_better for each thread   
     
     compress_args_t *args = (compress_args_t *)data;
     // std::cout << "in thread: " << args->threadId << std::endl;
-    std::ifstream inPart(args->inPartName);
-    std::ofstream outPart(args->outPartName);
+    // std::ifstream inPart(args->inPartName);
+    // std::ofstream outPart(args->outPartName);
+    // compress_best(inPart, outPart, args->dict, args->dict_rev, args->debug);
+    // inPart.close();
+    // outPart.close();
     
-    compress_better(inPart, outPart, args->dict, args->dict_rev, args->debug);
-    inPart.close();
-    outPart.close();
+    compress_best(args->inPartName, args->outPartName, args->dict, args->dict_rev, args->debug);
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -444,14 +541,13 @@ int main(int argc, char *argv[])
     std::string params_file = argv[1];
 
     check_file(params, params_file);
-    delta("time to check files");
     int debug;
     std::string input_file;
     std::string output_file;
-    int mode;
+    
     int optimization;
     int numThreads; 
-    construct_params(params, debug, input_file, output_file, mode, optimization, numThreads);
+    construct_params(params, debug, input_file, output_file, optimization, numThreads);
     
     // open input and output, check that the operation succedded 
     std::ifstream input(input_file); // input file
@@ -460,10 +556,9 @@ int main(int argc, char *argv[])
     check_file(output,output_file);
     params.close();
     
-    std::cout << "Input parameters accepted!" << std::endl;
-    delta("time to construct parameters");
-    std::cout << std::endl;
-    std::cout << "Compression has started!" << std::endl;
+    
+    if(debug){std::cout << "Input parameters accepted!" << std::endl; delta("time to construct parameters");}
+    std::cout << "  Compression has started!" << std::endl;
 
     // https://www.geeksforgeeks.org/unordered_map-in-cpp-stl/
     // will use this built in hash map. might reimplement with b tree later
@@ -487,8 +582,9 @@ int main(int argc, char *argv[])
     }
     else if(optimization == 2){
         
-        construct_dict_better(input_file, dict, dict_rev, numElems, debug);
-        delta("time to construct dictionary");
+        //construct_dict_better(input_file, dict, dict_rev, numElems, debug);
+        construct_dict_best(input_file, dict, dict_rev, numElems, debug);
+        if(debug){delta("time to construct dictionary");}
         // std::cout << "num of elems " << numElems << std::endl;
         // same strategy as in project 2
         // split up input file into pieces, find out sizes
@@ -499,54 +595,65 @@ int main(int argc, char *argv[])
         equalPartSize = floor(numElems / numThreads);
         numParts = floor(numElems / equalPartSize);
         lastPartSize = numElems - numParts*equalPartSize + equalPartSize;
-        // need to close input because it is already at end and reopen it 
-        input.close();
-        std::ifstream input(input_file);
         if(debug){
             std::cout << "equal size: " << equalPartSize << std::endl;
             std::cout << "num parts: " << numParts << std::endl;
             std::cout << "last part size: " << lastPartSize << std::endl;}
+
+        char inName[input_file.length() + 1];
+        strcpy(inName, input_file.c_str());
+
+        FILE *inFile;
+        char buffer [10000];
+        std::string line;
+        
+        inFile = fopen(inName, "r");
+        if (inFile == NULL) perror ("Error opening file");
         
         int lastPart = 0;
         int numRead = 0;
-        std::string line;
+        
         // create multiple input files 
         for(int i = 0; i < numParts; i++){
             if(i == numParts-1){lastPart = 1;};
             // create input part file name 
             std::string inPartName = "temp/inPart" + std::to_string(i) + ".txt";
-            std::ofstream inPart(inPartName);
+            char inPartNameChar[inPartName.length() + 1];
+            strcpy(inPartNameChar, inPartName.c_str());
+            FILE *inPart;
+            inPart = fopen(inPartNameChar, "w");
+
+            char *line = NULL;
+            size_t len = 0;
+
             // read in first part
             if(!lastPart){
-                while(!input.eof()){
-                    // if you haven't read the whole part, keep reading
+                while( getline(&line, &len, inFile) != -1) {
+                    fputs (line , inPart);
+                    numRead++;
                     if(numRead < equalPartSize){
-                        getline(input,line);
-                        numRead++;
                         // write to temp output 
-                        inPart << line << std::endl;
+                        continue;
                     }
                     else{break;}
                 }
                 numRead = 0; 
             }
             else if(lastPart){
-                // if on last part, read last part size
-                while(!input.eof()){
-                    // if you haven't read the whole part, keep reading
+                while( getline(&line, &len, inFile) != -1) {
+                    fputs (line , inPart);
+                    numRead++;
                     if(numRead < lastPartSize){
-                        getline(input,line);
-                        numRead++;
                         // write to temp output 
-                        inPart << line << std::endl;
+                        continue;
                     }
                     else{break;}
                 }
                 numRead = 0; 
             }
-            inPart.close();
+            fclose(inPart);
         }
-        delta("time to create temp input files");
+        if(debug){delta("time to create temp input files");}
         pthread_t threads[numThreads];
         compress_args_t args[numThreads];
         // dispatch threads
@@ -579,14 +686,12 @@ int main(int argc, char *argv[])
         output.close();
     }
 
-    delta("time to compress");
-
     // now, write dictionary to the end of the file 
     write_dict(dict, output_file, debug);
-    delta("time to write dictionary");
-    std::cout << "Compression has completed!" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Decompression has started!" << std::endl;
+    delta("    time to compress");
+    
+    std::cout << "  Compression has completed!" << std::endl;
+    std::cout << "  Decompression has started!" << std::endl;
     
     // decompress 
     // open the output as an input now
@@ -601,16 +706,16 @@ int main(int argc, char *argv[])
 
     compressed.close();
     decompressed.close();
-    std::cout << "Deompression has completed!" << std::endl;
-    delta("time to decompress");
+    std::cout << "  Deompression has completed!" << std::endl;
+    delta("    time to decompress");
     std::cout << std::endl;
     // check if compression and decompression was successful
     int passed = is_equal(decomp_output_file,input_file);
     std::cout << "Original file and compressed file are identical: " << passed << std::endl;
-    delta("time to check that the files are identical");
+    if(debug){delta("time to check that the files are identical");}
 
     // add statistics based on compression ratio 
     std::cout << "Compression ratio (larger over smaller): " << get_size(input_file) << "/" << get_size(output_file);
-    std::cout << "\n    = " << get_size(input_file) / get_size(output_file) << std::endl;
+    std::cout << " = " << get_size(input_file) / get_size(output_file) << std::endl;
     return 0;
 };

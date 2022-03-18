@@ -2,9 +2,7 @@
 0
 # The name of the input file (only accepts text files currently)
 data/Large-Size-Column.txt
-# operation: compress, decompress, compress then decompress (0, 1, 2) [still need to implement]
-2
-# level of optimization (0 = no optimization, 1 = frequency dictionary, 2 = frequency dictionary + pthreads)
+# level of optimization (0 = no optimization, 1 = frequency dictionary, 2 = frequency dictionary + pthreads + + faster file operations))
 2
 # number of threads (ignored if level of optimizaion != 2)
 12

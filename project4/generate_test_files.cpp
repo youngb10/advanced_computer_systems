@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     std::ifstream inputFile(argv[1]); // input file
     std::string inputName = argv[1];
     std::string outName = "modified_" + inputName;
+    
     std::string line;
     std::ofstream outFile(outName);
     while(!inputFile.eof()){
