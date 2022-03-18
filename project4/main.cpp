@@ -305,44 +305,29 @@ void create_dictionary_and_compress(std::ifstream &input, std::ofstream &output,
     if(debug){print_dict(dict);}
 }
 
-void compress_better(std::ifstream &input, std::ofstream &output, std::unordered_map<std::size_t, std::string> &dict, std::unordered_map<std::string, std::size_t> &dict_rev, int debug){
+void compress_better(std::ifstream &input, std::ofstream &output, std::unordered_map<std::size_t, std::string> dict, std::unordered_map<std::string, std::size_t> dict_rev, int debug){
     // compress file and construct dictionary 
     
     std::string word;
     std::size_t key;
-    //int key;
-    //std::cout << "key size ___ " << sizeof(key) << std::endl;
-    // take dictionary, then assign new values
     
-    //duration<double, std::milli> find_time;
-    //duration<double, std::milli> insert_time;
+    // take dictionary, then assign new values
     std::string ckey_str;
     std::size_t ckey;
     while(!input.eof()){
         // read in value
         getline(input,word);
-        if(word != ""){      
-            //delta("  compression; time to find key");
-            //find_time = delta();
-            
+        if(word != ""){
             // find value using key
             std::unordered_map<std::string, std::size_t>::iterator citr;
             citr = dict_rev.find(word);
-            //int convertdata = static_cast<int>(data);
-
-            //std::cout << "size: " << sizeof(citr->second) << std::endl;
+            //delta("time to find word");
             // now, create output 
             output << citr->second << std::endl;
-            //output << val << std::endl;
             if(debug){std::cout << "Key: " << key << " Value: " << word << std::endl;}
         }
-        //std::cout << find_time.count() / insert_time.count() << std::endl;
-        //delta("  compression; time to compress line");
     }
     if(debug){print_dict(dict);}
-
-    std::cout << "in thread: "  << std::endl;
-    
 }
 
 void decompress(std::ifstream &compressed, std::ofstream &decompressed, std::unordered_map<std::size_t, std::string> &dict, int debug){
@@ -399,9 +384,6 @@ void construct_dict_better(std::string input_file, std::unordered_map<std::size_
         if(word != ""){
             numElems++;
             int found = 0;
-            //delta("  compression; time to find key");
-            //find_time = delta();
-            
             // using a reverse map to search for values since iterating is extremely slow
             std::unordered_map<std::string, std::size_t>::iterator citr;
             citr = dict_rev_freq.find(word);
@@ -443,7 +425,7 @@ static void *compress_multithread(void *data){
     // simply call compress_better for each thread   
     
     compress_args_t *args = (compress_args_t *)data;
-    std::cout << "in thread: " << args->threadId << std::endl;
+    // std::cout << "in thread: " << args->threadId << std::endl;
     std::ifstream inPart(args->inPartName);
     std::ofstream outPart(args->outPartName);
     
@@ -506,6 +488,7 @@ int main(int argc, char *argv[])
     else if(optimization == 2){
         
         construct_dict_better(input_file, dict, dict_rev, numElems, debug);
+        delta("time to construct dictionary");
         // std::cout << "num of elems " << numElems << std::endl;
         // same strategy as in project 2
         // split up input file into pieces, find out sizes
@@ -532,57 +515,42 @@ int main(int argc, char *argv[])
             if(i == numParts-1){lastPart = 1;};
             // create input part file name 
             std::string inPartName = "temp/inPart" + std::to_string(i) + ".txt";
-            
             std::ofstream inPart(inPartName);
-            
-            // std::cout << inPartName << std::endl;
             // read in first part
             if(!lastPart){
                 while(!input.eof()){
                     // if you haven't read the whole part, keep reading
                     if(numRead < equalPartSize){
-                        
                         getline(input,line);
                         numRead++;
                         // write to temp output 
                         inPart << line << std::endl;
                     }
-                    else{
-                        break;
-                    }
+                    else{break;}
                 }
                 numRead = 0; 
             }
             else if(lastPart){
-                //std::cout << "last part begin" << std::endl;
                 // if on last part, read last part size
                 while(!input.eof()){
                     // if you haven't read the whole part, keep reading
                     if(numRead < lastPartSize){
-                        
                         getline(input,line);
                         numRead++;
                         // write to temp output 
                         inPart << line << std::endl;
                     }
-                    else{
-                        break;
-                    }
+                    else{break;}
                 }
                 numRead = 0; 
-                //std::cout << "last part end" << std::endl;
             }
             inPart.close();
         }
-
-        //pthread_t threads = (pthread_t) malloc((numThreads+1) * sizeof(pthread_t));
-        //compress_args_t args[numParts+1];
+        delta("time to create temp input files");
         pthread_t threads[numThreads];
         compress_args_t args[numThreads];
         // dispatch threads
         for(int i = 0; i < numParts; i++){
-            //if(i == numParts-1){lastPart = 1;};
-            
             args[i].debug = debug;
             args[i].dict_rev = dict_rev;
             args[i].inPartName = "temp/inPart" + std::to_string(i) + ".txt";
@@ -596,7 +564,6 @@ int main(int argc, char *argv[])
         }
 
         // now reconstruct the correct output
-        
         for (unsigned i = 0; i < numThreads; i++){
             // file to open
             std::string outPartName = "temp/outPart" + std::to_string(i) + ".txt";
@@ -608,15 +575,10 @@ int main(int argc, char *argv[])
             }
             outPart.close();
         }
-        
         input.close();
         output.close();
     }
-    
-    //print_dict(dict);
-    // compress(input, output, dict, debug);
-    //input.close();
-    //output.close();
+
     delta("time to compress");
 
     // now, write dictionary to the end of the file 
