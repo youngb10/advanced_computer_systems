@@ -1,5 +1,7 @@
 data/*
 !data/.gitkeep
+!data/Small-Size-Column.txt
+!data/Medium-Size-Column.txt
 temp/*
 !temp/.gitkeep
 modified_data/*
