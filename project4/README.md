@@ -74,12 +74,19 @@ The following data was obtained using a Virtual Linux Machine with 4 cores, each
 Data collected includes results for small, medium, and large column sizes, using optimization levels of 0, 1, and 2 for each column size. Compression time is the time that is taken to carry out the dictionary encoding and generate the encoded column file. Decompression time is the time that it takes to decompress the output file using the dictionary. 
 
 Small Column Size:
+
     Optimization 0 compression time:   0.163s
+    
     Optimization 0 decompression time: 0.126s
+    
     Optimization 1 compression time:   0.159s
+    
     Optimization 1 decompression time: 0.127s
+    
     Optimization 2 compression time:   0.179s
+    
     Optimization 2 decompression time: 0.129s
+    
     Query time:                        0.006s
 
 Medium Column Size:
