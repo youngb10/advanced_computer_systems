@@ -76,20 +76,15 @@ Data collected includes results for small, medium, and large column sizes, using
 Small Column Size:
 
     Optimization 0 compression time:   0.163s
-    
     Optimization 0 decompression time: 0.126s
-    
     Optimization 1 compression time:   0.159s
-    
     Optimization 1 decompression time: 0.127s
-    
     Optimization 2 compression time:   0.179s
-    
     Optimization 2 decompression time: 0.129s
-    
     Query time:                        0.006s
 
 Medium Column Size:
+
     Optimization 0 compression time:   1.475s
     Optimization 0 decompression time: 1.264s
     Optimization 1 compression time:   1.462s
@@ -99,6 +94,7 @@ Medium Column Size:
     Query time:                        0.073s
 
 Large Column Size:
+
     Optimization 0 compression time:   32.719s
     Optimization 0 decompression time: 27.623s
     Optimization 1 compression time:   31.324s
