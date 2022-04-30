@@ -2,7 +2,7 @@
 
 <!-- ABOUT THE PROJECT -->
 
-### About the Project
+## About the Project
 
 The object of this project is to design a DDR memory controller using Verilog. The memory controller is one of the most complex components in the CPU and is used as an interface between the DRAM and the rest of the CPU. It is responsible for, among other things, recieving read and write requests from the CPU, scheduling the request order, implementing row-buffer management policies, and controlling address mapping schemes. 
 
@@ -29,7 +29,7 @@ The designed memory controller has the following features:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Installation and Usage
+## Installation and Usage
 
 1. Install Vivado 2016.2
 
@@ -63,7 +63,7 @@ cd archive
 
 <!-- STRUCTURE -->
 
-### Structure
+## Structure
 
 The memory controller is assembled of many smaller modules. Each module describes either a base level component, or a higher level component which combines other base level components. For example, the module which sorts the requests has the following structure: at the smallest level, there is a sort_two module which sorts two inputs, then five sort_two instances are combined to create the sort_four module, and then five sort_four instances are combined to create the sort_eight module, etc.
 
@@ -87,18 +87,20 @@ Many of these medium-size modules are described in terms of smaller modules, suc
 <div align="left">
 
   
-# Request Tracker Structure:
+### Request Tracker Structure
 The input requests from the CPUs are received by four FIFO buffers, one for each possible CPU. The request tracker takes requests one at a time from these FIFO buffers based on whichever one is the most full. Each entry in the request tracker buffer has a validity bit associated with it, and whenever that bit is high for a particular entry, that means it is occupied. A new request from the FIFO buffers is added wherever the validity bit is low, and the bit is set high. Upon request completion, the entry is once again freed up by setting the bit low. The age of requests is also kept track of in the request tracker, where for every eight clock cycles, the age increases by 1. All entries and entry properties such as validity and age are output to the sorter module. 
   
-# Schedule Algorithm Structure:
+### Schedule Algorithm Structure
 The schedule algorithm takes as input the CPU-defined priority of each entry, the validity of each entry (if the validity bit is low, there is no request there), the age of each entry, and the read/write status of each entry. The schedule priority is assigned based on the below formula:
 ```sh
 schedule_priority[i] = valid[i] * (weighted_priority[i] + (4 * read[i]) + age[i])
 ```
 As can be seen, if there is no request active in the entry, the priority is automatically set to zero. Read requests have a higher priority than write requests, and requests will be scheduled sooner the longer they have been waiting. 
 
-#Sorter Structure
+### Sorter Structure
 The sorter organizes sixteen elements based on their scheduled priority. The elements are output in order. It is immediately obvious how to sort two elements using a comparator, but it is not as intuitive to sort a larger number of elements using logic. 
+  
+  One method that was considered was using the well-known merge sort algorithm in hardware. The steps could be implemented easily up until two groups of two elements would need to be combined. This could be implemented by using a two-element comparator for the smaller elements, moving the smaller element to the front, and incrementing a pointer for the group of two elements. Once again, use a two-element comparator to compare the 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
