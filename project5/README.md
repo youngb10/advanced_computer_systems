@@ -2,9 +2,9 @@
 
 <!-- ABOUT THE PROJECT -->
 
-## About Final Project
+## About the Project
 
-The object of the final project is to build a high speed memory controller using Verilog. The memory controller is one of the most complex components in a cpu die. It is responsible for, among others, recieving read and write requests from the cpu, creating a read and write queue, refreshing DRAM cells, managing row buffer management policies, and controlling address mapping schemes.
+The object of this project is to design a DDR memory controller using Verilog. The memory controller is one of the most complex components in the CPU and is used as an interface between the DRAM and the rest of the CPU. It is responsible for, among other things, recieving read and write requests from the CPU, scheduling the request order, implementing row-buffer management policies, and controlling address mapping schemes. 
 
 <br />
 <div align="center">
@@ -14,13 +14,17 @@ The object of the final project is to build a high speed memory controller using
 <div align="left">
 
 <div align="center">
-Source: Professor Tong Zhang's Part3.pdf in Advanced Computer Systems, ECSE 4961 Spring 2022. 
+Source: Professor Tong Zhang's Part3.pdf, Advanced Computer Systems, ECSE 4961
 <div align="left">
 
-The final project implements the following features:
+The designed memory controller has the following features:
 
-- feature A
-- feature B
+- Up to 4 CPUs may simultaneously make requests
+- Allows CPUs to assign a priority to each request
+- Dynamic request scheduling
+- Automatically refreshes the DRAM every 64ms
+- Address mapping optimized for the row-buffer management policy
+- Open row-buffer management policy ideal for localized accesses
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -28,10 +32,10 @@ The final project implements the following features:
 
 1. Install Vivado 2016.2
 
-You should be able to create a free account with your rpi email address.
+You should be able to create a free account with your RPI email address.
 Download the windows copy [here.](https://www.xilinx.com/member/forms/download/xef.html?filename=Xilinx_Vivado_SDK_2016.2_0605_1_Win64.exe)
 
-Note: All testing was performed using Vivado 2016.2, but other similar software may work too.
+Note: Design and Synthesis was performed using Vivado 2016.2, but other similar software may work too. 
 
 ```sh
 open the installer and install Vivado 2016.2
@@ -60,13 +64,38 @@ cd archive
 
 ## Structure
 
-The memory controller is split into multiple verilog files. Each file describes either a base level component, or a higher level component which combines other base level components. For example, the sorting function has the following structure: there is a sort_two file which sorts two inputs, then two sort_two blocks are combined to create sort_four, and then two sort_four are combined to create sort_eight etc.
+The memory controller is assembled of many smaller modules. Each module describes either a base level component, or a higher level component which combines other base level components. For example, the module which sorts the requests has the following structure: at the smallest level, there is a sort_two module which sorts two inputs, then five sort_two instances are combined to create the sort_four module, and then five sort_four instances are combined to create the sort_eight module, etc.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/high_level.png" alt="250MB" width="900">
+  </a>
+<div align="left">
 
-<!-- Experimental Results -->
+At a high level, the memory controller can be described as a combination of six medium-size modules. Shown above is an image of the top-level design, showcasing the request tracker, the schedule algorithm, the sorting block, the scheduled buffer, the command generator, and the response queue. The memory controller takes requests from CPUs as inputs to the request tracker. The request tracker holds all input requests until they are completed. The active requests are output to the schedule algorithm and the sort_sixteen module, which together sort the up to sixteen requests by age, CPU-defined priority, and read/write status. The output of the sort is then captured by the scheduled buffer, which holds the current inventory of sorted requests. The top request, as well as the row address of the next request, are output to the command generator. The command generator sends to the DRAM the signals necessary for completing the request, and the completed request is sent to the response queue and removed from the request buffer.
+  
+Many of these medium-size modules are described in terms of smaller modules, such as FIFO buffers, counters, or smaller width sorters. Shown below is the hierarchy of modules implemented in this design. 
 
-## Experimental Results
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/hierarchy.png" alt="250MB" width="300">
+  </a>
+<div align="left">
+
+#Request Tracker Structure:
+The input requests from the CPUs are received by four FIFO buffers, one for each possible CPU. The request tracker takes requests one at a time from these FIFO buffers based on whichever one is the most full. Each entry in the request tracker buffer has a validity bit associated with it, and whenever that bit is high for a particular entry, that means it is occupied. A new request from the FIFO buffers is added wherever the validity bit is low, and the bit is set high. Upon request completion, the entry is once again freed up by setting the bit low. The age of requests is also kept track of in the request tracker, where for every eight clock cycles, the age increases by 1. All entries and entry properties such as validity and age are output to the sorter module. 
+  
+#Schedule Algorithm Structure:
+The schedule algorithm takes as input the CPU-defined priority of each entry, the validity of each entry (if the validity bit is low, there is no request there), the age of each entry, and the read/write status of each entry. The schedule priority is assigned based on the below formula:
+```sh
+schedule_priority[i] = valid[i] * (weighted_priority[i] + (4 * read[i]) + age[i])
+```
+As can be seen, if there is no request active in the entry, the priority is automatically set to zero. Read requests have a higher priority than write requests, and requests will be scheduled sooner the longer they have been waiting. 
+
+#Sorter Structure
+The sorter organizes sixteen elements based on their scheduled priority. The elements are output in order. It is immediately obvious how to sort two elements using a comparator, but it is not as intuitive to sort a larger number of elements using logic. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
