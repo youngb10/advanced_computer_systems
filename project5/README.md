@@ -2,7 +2,7 @@
 
 <!-- ABOUT THE PROJECT -->
 
-## About the Project
+### About the Project
 
 The object of this project is to design a DDR memory controller using Verilog. The memory controller is one of the most complex components in the CPU and is used as an interface between the DRAM and the rest of the CPU. It is responsible for, among other things, recieving read and write requests from the CPU, scheduling the request order, implementing row-buffer management policies, and controlling address mapping schemes. 
 
@@ -17,7 +17,7 @@ The object of this project is to design a DDR memory controller using Verilog. T
 Source: Professor Tong Zhang's Part3.pdf, Advanced Computer Systems, ECSE 4961
 <div align="left">
 
-
+  
 The designed memory controller has the following features:
 
 - Up to 4 CPUs may simultaneously make requests
@@ -63,7 +63,7 @@ cd archive
 
 <!-- STRUCTURE -->
 
-## Structure
+### Structure
 
 The memory controller is assembled of many smaller modules. Each module describes either a base level component, or a higher level component which combines other base level components. For example, the module which sorts the requests has the following structure: at the smallest level, there is a sort_two module which sorts two inputs, then five sort_two instances are combined to create the sort_four module, and then five sort_four instances are combined to create the sort_eight module, etc.
 
