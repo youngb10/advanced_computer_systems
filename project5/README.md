@@ -171,7 +171,17 @@ The commands that are output by the command generator are directly controlled by
 <div align="left">
 <br />
 
-For example, if the Activate command is desired, the control outputs will be {CS#, RAS#, CAS#, WE#} = 4'b0011. The state that the command generator is in will determine which command is desired. Example control outputs are given below. If the Activate command is desired at a bank with address 1, the command in the image will be A1. If a precharge is desired at a bank with address 3, the command will be P3. 
+Shown below is the state of an example DRAM cell after several commands occur at that address location. This illustrates how the commands are directly used to interface with the DRAM.
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/dram_cell.png" alt="250MB" width="500">
+  </a>
+<div align="left">
+<br />
+
+The state that the command generator is in will determine which command is desired. Example control outputs are given below. If the Activate command is desired at a bank with address 1, the command in the image will be A1. If a precharge is desired at a bank with address 3, the command will be P3. 
 
 <br />
 <div align="center">
@@ -229,7 +239,9 @@ Project Link: [https://github.com/Nesathurai/advanced_computer_systems](https://
 ## Acknowledgments
 
 - [README Template](https://github.com/othneildrew/Best-README-Template)
-- [ZSTD v1.5.2 Manual](https://raw.githack.com/facebook/zstd/release/doc/zstd_manual.html)
+- [Carmelo Furlan, Analysis of Hardware Sorting Units in Processor Design](https://digitalcommons.calpoly.edu/cgi/viewcontent.cgi?article=3417&context=theses)
+- [Markus Ringhofer, Design and Implementation of a Memory Controller](https://www.akesson.nl/files/students/ringhofer-thesis.pdf)
+- [Stephen St. Michael, Executing Commands in Memory](https://www.allaboutcircuits.com/technical-articles/executing-commands-memory-dram-commands/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
