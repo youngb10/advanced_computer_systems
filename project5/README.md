@@ -30,6 +30,9 @@ The designed memory controller has the following features:
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Installation and Usage
+  
+As this is a hardware design project, there is no code to necessarily run. However, the project is available to view, synthesize, and implement in Vivado. You do not need Vivado to view the Verilog code, you may view the Verilog code as text files using a text editor. 
+<br />
 
 1. Install Vivado 2016.2
 
@@ -51,12 +54,12 @@ enter email and password when prompted
 git clone https://github.com/Nesathurai/advanced_computer_systems.git
 ```
 
-3. Go to cloned folder and view verilog files
+3. Go to cloned folder and open the project in Vivado 2016.2, or view the Verilog .v files with a text editor. 
 
 ```sh
 cd advanced_computer_systems
 cd project5
-cd archive
+cd Vivado
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -88,6 +91,7 @@ Many of these medium-size modules are described in terms of smaller modules, suc
 
 ### Request Tracker Structure
 The input requests from the CPUs are received by four FIFO buffers, one for each possible CPU. The request tracker takes requests one at a time from these FIFO buffers based on whichever one is the most full. Each entry in the request tracker buffer has a validity bit associated with it, and whenever that bit is high for a particular entry, that means it is occupied. A new request from the FIFO buffers is added wherever the validity bit is low, and the bit is set high. Upon request completion, the entry is once again freed up by setting the bit low. The age of requests is also kept track of in the request tracker, where for every eight clock cycles, the age increases by 1. All entries and entry properties such as validity and age are output to the sorter module. 
+<br />
   
 ### Schedule Algorithm Structure
 The schedule algorithm takes as input the CPU-defined priority of each entry, the validity of each entry (if the validity bit is low, there is no request there), the age of each entry, and the read/write status of each entry. The schedule priority is assigned based on the below formula:
@@ -95,6 +99,7 @@ The schedule algorithm takes as input the CPU-defined priority of each entry, th
 schedule_priority[i] = valid[i] * (weighted_priority[i] + (4 * read[i]) + age[i])
 ```
 As can be seen, if there is no request active in the entry, the priority is automatically set to zero. Read requests have a higher priority than write requests, and requests will be scheduled sooner the longer they have been waiting. 
+<br />
 
 ### Sorter Structure
 The sorter organizes sixteen elements based on their scheduled priority. The elements are output in order. It is immediately obvious how to sort two elements using a comparator, but it is not as intuitive to sort a larger number of elements using logic. 
@@ -130,9 +135,15 @@ Source: Analysis of Hardware Sorting Units in Processor Design by Carmelo Furlan
 <br />  
 
 This is iterated several times to obtain a module that can combinationally sort sixteen elements. While the space taken by the sorter increases by a factor of five for each time the number of elements is multiplied by two, the time taken is only multiplied by a factor of three, making this an ideal sorting method for the memory controller. 
+<br />
 
 ### Scheduled Buffer Structure
-SCHEDULED BUFFER
+The scheduled buffer takes as input the sorted list of requests. The scheduled buffer will wait to load the updated requests in until the command generator is ready, as to optimize the throughput of the currently sorted requests. The scheduled buffer sends the current active request to the command generator, as well as the row address of the following request. The row address of the following request is used to determine whether or not the row buffer should continue to hold the current row. 
+<br />
+
+### Command Generator Structure
+The command generator takes the current active request and the row address of the next request as input, and uses these to directly command the DRAM. 
+<br />
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
