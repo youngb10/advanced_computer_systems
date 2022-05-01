@@ -157,7 +157,7 @@ The commands that are output by the command generator are directly controlled by
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/outputs.png" alt="250MB" width="300">
+    <img src="images/outputs.png" alt="250MB" width="400">
   </a>
 <div align="left">
 <br />
@@ -180,7 +180,7 @@ The address mapping scheme determines how the DRAM receives the addresses given 
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/addr_scheme.png" alt="250MB" width="400">
+    <img src="images/addr_scheme.png" alt="250MB" width="900">
   </a>
 <div align="left">
 <br />
@@ -192,10 +192,14 @@ The DRAM refresh is another critical element of the command generator. If the cu
 <!-- Conclusion -->
 
 ## Conclusion
-Memory controllers are massively complex elements of hardware that fulfill many critical tasks. Neither the CPU nor the DRAM will be able to operate optimally, or at all, with a sub-par or dysfunctional memory controller. While there are certainly improvable elements in this memory controller, it covers many of the critical functions and does so with reliable speed. 
+Memory controllers are massively complex elements of hardware that fulfill many critical tasks. Neither the CPU nor the DRAM will be able to operate optimally, or at all, with a sub-par or dysfunctional memory controller. While there are certainly improvable elements of this memory controller, it covers many of the critical functions and does so with reliable speed. 
 <br />
 
+One way in which this memory controller could be improved is by increasing the size of the request tracker. Only being able to hold sixteen elements at a time would possibly make this controller encounter issues if employed on a real system. This would also require more complex and optimized sorters and buffers. A second way in which it could be improved is by staggering the refresh process. Currently, when a refresh is queued, the controller refreshes every DRAM location. In a real system, this will cause large amounts of latency for a brief period of time while the DRAM is refreshing. A more fluid solution would be to stagger the refreshes and to make sure that each segment is refreshed at least once every 64ms, but this would make the refresh system and command generator both significantly more complex. 
+<br />
 
+Through implementing and analyzing this memory controller, the complexities and tradeoffs in design have become clear. With the high demands of modern hardware and the deep intricacies involved with designing a controller such as this, it is staggering how masterfully hardware such as this is designed today. This was a great experience to sample what it is like to construct such a complex, yet necessary, element of computing systems. 
+<br />
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
