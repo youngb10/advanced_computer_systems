@@ -73,8 +73,9 @@ The memory controller is assembled of many smaller modules. Each module describe
     <img src="images/high_level.png" alt="250MB" width="800">
   </a>
 <div align="left">
+<br />
 
-  At a high level, the memory controller can be described as a combination of six medium-size modules. Shown above is an image of the top-level design, showcasing the request tracker, the schedule algorithm, the sorting block, the scheduled buffer, the command generator, and the response queue. The memory controller takes requests from CPUs as inputs to the request tracker. The request tracker holds all input requests until they are completed. The active requests are output to the schedule algorithm and the sort_sixteen module, which together sort the up to sixteen requests by age, CPU-defined priority, and read/write status. The output of the sort is then captured by the scheduled buffer, which holds the current inventory of sorted requests. The top request, as well as the row address of the next request, are output to the command generator. The command generator sends to the DRAM the signals necessary for completing the request, and the completed request is sent to the response queue and removed from the request buffer.
+At a high level, the memory controller can be described as a combination of six medium-size modules. Shown above is an image of the top-level design, showcasing the request tracker, the schedule algorithm, the sorting block, the scheduled buffer, the command generator, and the response queue. The memory controller takes requests from CPUs as inputs to the request tracker. The request tracker holds all input requests until they are completed. The active requests are output to the schedule algorithm and the sort_sixteen module, which together sort the up to sixteen requests by age, CPU-defined priority, and read/write status. The output of the sort is then captured by the scheduled buffer, which holds the current inventory of sorted requests. The top request, as well as the row address of the next request, are output to the command generator. The command generator sends to the DRAM the signals necessary for completing the request, and the completed request is sent to the response queue and removed from the request buffer.
   
 Many of these medium-size modules are described in terms of smaller modules, such as FIFO buffers, counters, or smaller width sorters. Shown below is the hierarchy of modules implemented in this design. 
 
@@ -105,20 +106,30 @@ The sorter organizes sixteen elements based on their scheduled priority. The ele
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/sort_four.png" alt="250MB" width="600">
+    <img src="images/sort_four.png" alt="250MB" width="500">
   </a>
 <div align="left">
 
-  Beautifully, this method can be scaled up to sort 2n elements by using five of the n-size sorting elements, as shown below.
+<div align="center">
+Source: Analysis of Hardware Sorting Units in Processor Design by Carmelo Furlan
+<div align="left">
+<br />
+
+Beautifully, this method can be scaled up to sort 2n elements by using five of the n-size sorting elements, as shown below.
 
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/sort_n.png" alt="250MB" width="600">
+    <img src="images/sort_n.png" alt="250MB" width="500">
   </a>
 <div align="left">
-  
-  This is iterated several times to obtain a module that can combinationally sort sixteen elements. While the space taken by the sorter increases by a factor of five for each time the number of elements is multiplied by two, the time taken is only multiplied by a factor of three, making this an ideal sorting method for the memory controller. 
+
+<div align="center">
+Source: Analysis of Hardware Sorting Units in Processor Design by Carmelo Furlan
+<div align="left">
+<br />  
+
+This is iterated several times to obtain a module that can combinationally sort sixteen elements. While the space taken by the sorter increases by a factor of five for each time the number of elements is multiplied by two, the time taken is only multiplied by a factor of three, making this an ideal sorting method for the memory controller. 
 
 ### Scheduled Buffer Structure
 SCHEDULED BUFFER
