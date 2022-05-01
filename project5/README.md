@@ -180,7 +180,7 @@ The address mapping scheme determines how the DRAM receives the addresses given 
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/addr_scheme.png" alt="250MB" width="900">
+    <img src="images/addr_scheme.png" alt="250MB" width="650">
   </a>
 <div align="left">
 <br />
