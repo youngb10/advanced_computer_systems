@@ -87,6 +87,16 @@ Many of these medium-size modules are described in terms of smaller modules, suc
     <img src="images/hierarchy.png" alt="250MB" width="300">
   </a>
 <div align="left">
+<br />
+
+Shown below is the completed synthesis of the full memory controller. This design uses ~8000 6-input look-up tables and ~3000 flip-flops.
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/synth.png" alt="250MB" width="900">
+  </a>
+<div align="left">
 
 ### Request Tracker Structure
 The input requests from the CPUs are received by four FIFO buffers, one for each possible CPU. The request tracker takes requests one at a time from these FIFO buffers based on whichever one is the most full. Each entry in the request tracker buffer has a validity bit associated with it, and whenever that bit is high for a particular entry, that means it is occupied. A new request from the FIFO buffers is added wherever the validity bit is low, and the bit is set high. Upon request completion, the entry is once again freed up by setting the bit low. The age of requests is also kept track of in the request tracker, where for every eight clock cycles, the age increases by 1. All entries and entry properties such as validity and age are output to the sorter module. 
