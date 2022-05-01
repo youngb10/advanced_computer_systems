@@ -31,7 +31,7 @@ The designed memory controller has the following features:
 
 ## Installation and Usage
   
-As this is a hardware design project, there is no code to necessarily run. However, the project is available to view, synthesize, and implement in Vivado. You do not need Vivado to view the Verilog code, you may view the Verilog code as text files using a text editor. 
+As this is a hardware design project, there is no code to run. However, the project is available to view, synthesize, and implement in Vivado. You do not need Vivado to view the Verilog code, you may view the Verilog code as text files using a text editor. 
 <br />
 
 1. Install Vivado 2016.2
@@ -54,12 +54,11 @@ enter email and password when prompted
 git clone https://github.com/Nesathurai/advanced_computer_systems.git
 ```
 
-3. Go to cloned folder and open the project in Vivado 2016.2, or view the Verilog .v files with a text editor. 
+3. Go to cloned Vivado folder and open the .xpr project in Vivado 2016.2, or view the Verilog .v files in the "sources" directory with a text editor
 
 ```sh
 cd advanced_computer_systems
 cd project5
-cd Vivado
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
