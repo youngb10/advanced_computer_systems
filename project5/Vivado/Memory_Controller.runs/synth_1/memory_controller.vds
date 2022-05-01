@@ -1,0 +1,671 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Sat Apr 30 17:36:47 2022
+# Process ID: 9172
+# Current directory: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1
+# Command line: vivado.exe -log memory_controller.vds -mode batch -messageDb vivado.pb -notrace -source memory_controller.tcl
+# Log file: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1/memory_controller.vds
+# Journal file: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source memory_controller.tcl -notrace
+Command: synth_design -top memory_controller -part xc7a35tcpg236-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 4408 
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:04 ; elapsed = 00:00:08 . Memory (MB): peak = 273.176 ; gain = 66.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'memory_controller' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/memory_controller.v:21]
+INFO: [Synth 8-638] synthesizing module 'request_tracker' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/request_tracker.v:16]
+INFO: [Synth 8-638] synthesizing module 'cpu_buffer' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/cpu_buffer.v:16]
+INFO: [Synth 8-256] done synthesizing module 'cpu_buffer' (1#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/cpu_buffer.v:16]
+INFO: [Synth 8-256] done synthesizing module 'request_tracker' (2#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/request_tracker.v:16]
+INFO: [Synth 8-638] synthesizing module 'schedule_algo' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/schedule_algo.v:16]
+INFO: [Synth 8-256] done synthesizing module 'schedule_algo' (3#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/schedule_algo.v:16]
+INFO: [Synth 8-638] synthesizing module 'sort_sixteen' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_sixteen.v:16]
+INFO: [Synth 8-638] synthesizing module 'sort_eight' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_eight.v:16]
+INFO: [Synth 8-638] synthesizing module 'sort_four' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_four.v:16]
+INFO: [Synth 8-638] synthesizing module 'sort_two' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_two.v:16]
+INFO: [Synth 8-256] done synthesizing module 'sort_two' (4#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_two.v:16]
+INFO: [Synth 8-256] done synthesizing module 'sort_four' (5#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_four.v:16]
+INFO: [Synth 8-256] done synthesizing module 'sort_eight' (6#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_eight.v:16]
+INFO: [Synth 8-256] done synthesizing module 'sort_sixteen' (7#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/sort_sixteen.v:16]
+INFO: [Synth 8-638] synthesizing module 'scheduled_buffer' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/scheduled_buffer.v:16]
+INFO: [Synth 8-256] done synthesizing module 'scheduled_buffer' (8#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/scheduled_buffer.v:16]
+INFO: [Synth 8-638] synthesizing module 'command_gen' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/command_gen.v:16]
+INFO: [Synth 8-638] synthesizing module 'refresh_tracker' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/refresh_tracker.v:18]
+INFO: [Synth 8-256] done synthesizing module 'refresh_tracker' (9#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/refresh_tracker.v:18]
+INFO: [Synth 8-256] done synthesizing module 'command_gen' (10#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/command_gen.v:16]
+INFO: [Synth 8-638] synthesizing module 'response_queue' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/response_queue.v:16]
+INFO: [Synth 8-638] synthesizing module 'response_buffer' [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/response_buffer.v:16]
+INFO: [Synth 8-256] done synthesizing module 'response_buffer' (11#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/response_buffer.v:16]
+INFO: [Synth 8-256] done synthesizing module 'response_queue' (12#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/response_queue.v:16]
+INFO: [Synth 8-256] done synthesizing module 'memory_controller' (13#1) [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/memory_controller.v:21]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:09 . Memory (MB): peak = 324.059 ; gain = 116.883
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:05 ; elapsed = 00:00:10 . Memory (MB): peak = 324.059 ; gain = 116.883
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a35tcpg236-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:05 ; elapsed = 00:00:10 . Memory (MB): peak = 324.059 ; gain = 116.883
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7a35tcpg236-1
+INFO: [Synth 8-5818] HDL ADVISOR - The operator resource <adder> is shared. To prevent sharing consider applying a KEEP on the output of the operator [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/cpu_buffer.v:45]
+INFO: [Synth 8-5544] ROM "empty" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "full" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5546] ROM "full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5544] ROM "valid_bit_reg[0]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[1]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[2]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[3]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[4]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[5]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[6]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[7]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[8]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[9]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[10]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[11]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[12]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[13]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[14]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[15]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[0]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[1]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[2]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[3]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[4]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[5]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[6]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[7]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[8]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[9]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[10]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[11]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[12]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[13]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[14]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[15]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5546] ROM "full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5544] ROM "valid_bit_reg[0]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[1]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[2]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[3]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[4]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[5]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[6]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[7]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[8]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[9]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[10]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[11]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[12]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[13]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[14]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[15]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[0]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[1]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[2]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[3]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[4]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[5]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[6]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[7]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[8]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[9]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[10]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[11]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[12]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[13]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[14]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "valid_bit_reg[15]" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "count" won't be mapped to Block RAM because address size (1) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "ptr_write" won't be mapped to Block RAM because address size (1) smaller than threshold (5)
+INFO: [Synth 8-5546] ROM "load_counter" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "count_reset" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5818] HDL ADVISOR - The operator resource <adder> is shared. To prevent sharing consider applying a KEEP on the output of the operator [C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.srcs/sources_1/new/response_buffer.v:47]
+INFO: [Synth 8-5546] ROM "empty" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "full" won't be mapped to RAM because it is too sparse
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 362.477 ; gain = 155.301
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      9 Bit       Adders := 16    
+	   4 Input      8 Bit       Adders := 16    
+	   4 Input      7 Bit       Adders := 1     
+	   2 Input      7 Bit       Adders := 1     
+	  16 Input      5 Bit       Adders := 1     
+	   2 Input      5 Bit       Adders := 4     
+	   2 Input      4 Bit       Adders := 6     
+	   2 Input      3 Bit       Adders := 16    
++---Registers : 
+	               69 Bit    Registers := 16    
+	               68 Bit    Registers := 16    
+	               67 Bit    Registers := 4     
+	               65 Bit    Registers := 4     
+	                9 Bit    Registers := 16    
+	                7 Bit    Registers := 1     
+	                5 Bit    Registers := 4     
+	                4 Bit    Registers := 5     
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 17    
++---RAMs : 
+	              536 Bit         RAMs := 8     
++---Muxes : 
+	   2 Input     69 Bit        Muxes := 3     
+	   2 Input     68 Bit        Muxes := 17    
+	   2 Input     32 Bit        Muxes := 1     
+	  13 Input     16 Bit        Muxes := 1     
+	   4 Input     16 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 1     
+	   9 Input     16 Bit        Muxes := 1     
+	   2 Input     12 Bit        Muxes := 250   
+	   5 Input      9 Bit        Muxes := 16    
+	   4 Input      8 Bit        Muxes := 16    
+	   2 Input      5 Bit        Muxes := 1     
+	   2 Input      4 Bit        Muxes := 11    
+	   5 Input      4 Bit        Muxes := 1     
+	   2 Input      2 Bit        Muxes := 25    
+	   6 Input      2 Bit        Muxes := 1     
+	  13 Input      2 Bit        Muxes := 1     
+	  12 Input      2 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 184   
+	   5 Input      1 Bit        Muxes := 18    
+	   4 Input      1 Bit        Muxes := 8     
+	   9 Input      1 Bit        Muxes := 6     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module cpu_buffer 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      4 Bit       Adders := 1     
+	   2 Input      3 Bit       Adders := 2     
++---Registers : 
+	               67 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
++---RAMs : 
+	              536 Bit         RAMs := 1     
++---Muxes : 
+	   2 Input      2 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 3     
+Module request_tracker 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      9 Bit       Adders := 16    
+	   4 Input      7 Bit       Adders := 1     
+	  16 Input      5 Bit       Adders := 1     
++---Registers : 
+	               69 Bit    Registers := 16    
+	                9 Bit    Registers := 16    
+	                1 Bit    Registers := 16    
++---Muxes : 
+	   2 Input     69 Bit        Muxes := 3     
+	   5 Input      9 Bit        Muxes := 16    
+	   2 Input      5 Bit        Muxes := 1     
+	   2 Input      4 Bit        Muxes := 11    
+	   5 Input      4 Bit        Muxes := 1     
+	   2 Input      2 Bit        Muxes := 17    
+	   2 Input      1 Bit        Muxes := 147   
+	   5 Input      1 Bit        Muxes := 16    
+Module schedule_algo 
+Detailed RTL Component Info : 
++---Adders : 
+	   4 Input      8 Bit       Adders := 16    
++---Muxes : 
+	   4 Input      8 Bit        Muxes := 16    
+Module sort_two 
+Detailed RTL Component Info : 
++---Muxes : 
+	   2 Input     12 Bit        Muxes := 2     
+Module scheduled_buffer 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      7 Bit       Adders := 1     
+	   2 Input      4 Bit       Adders := 2     
++---Registers : 
+	               68 Bit    Registers := 16    
+	                7 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     68 Bit        Muxes := 17    
+	   2 Input      1 Bit        Muxes := 2     
+Module refresh_tracker 
+Detailed RTL Component Info : 
++---Registers : 
+	                1 Bit    Registers := 1     
+Module command_gen 
+Detailed RTL Component Info : 
++---Registers : 
+	                2 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 1     
+	  13 Input     16 Bit        Muxes := 1     
+	   4 Input     16 Bit        Muxes := 1     
+	   2 Input     16 Bit        Muxes := 1     
+	   9 Input     16 Bit        Muxes := 1     
+	   6 Input      2 Bit        Muxes := 1     
+	  13 Input      2 Bit        Muxes := 1     
+	  12 Input      2 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 11    
+	   4 Input      1 Bit        Muxes := 8     
+	   9 Input      1 Bit        Muxes := 6     
+	   5 Input      1 Bit        Muxes := 2     
+Module response_buffer 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      5 Bit       Adders := 1     
+	   2 Input      3 Bit       Adders := 2     
++---Registers : 
+	               65 Bit    Registers := 1     
+	                5 Bit    Registers := 1     
++---RAMs : 
+	              536 Bit         RAMs := 1     
++---Muxes : 
+	   2 Input      2 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 3     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 90 (col length:60)
+BRAMs: 100 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:09 ; elapsed = 00:00:13 . Memory (MB): peak = 417.398 ; gain = 210.223
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5546] ROM "CPU0/empty" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU0/full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU1/empty" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU1/full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU2/empty" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU2/full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU3/empty" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "CPU3/full" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "load_counter" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "command_gen/count_reset" won't be mapped to RAM because it is too sparse
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:11 ; elapsed = 00:00:15 . Memory (MB): peak = 423.844 ; gain = 216.668
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:00:11 ; elapsed = 00:00:15 . Memory (MB): peak = 423.844 ; gain = 216.668
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Preliminary Mapping  Report (see note below)
++------------------+------------------------------+-----------+----------------------+---------------+
+|Module Name       | RTL Object                   | Inference | Size (Depth x Width) | Primitives    | 
++------------------+------------------------------+-----------+----------------------+---------------+
+|request_tracker   | CPU0/FIFO_reg                | Implied   | 8 x 67               | RAM32M x 12   | 
+|request_tracker   | CPU1/FIFO_reg                | Implied   | 8 x 67               | RAM32M x 12   | 
+|request_tracker   | CPU2/FIFO_reg                | Implied   | 8 x 67               | RAM32M x 12   | 
+|request_tracker   | CPU3/FIFO_reg                | Implied   | 8 x 67               | RAM32M x 12   | 
+|memory_controller | response_queue/CPU0/FIFO_reg | Implied   | 8 x 65               | RAM32M x 12   | 
+|memory_controller | response_queue/CPU1/FIFO_reg | Implied   | 8 x 65               | RAM32M x 12   | 
+|memory_controller | response_queue/CPU2/FIFO_reg | Implied   | 8 x 65               | RAM32M x 12   | 
+|memory_controller | response_queue/CPU3/FIFO_reg | Implied   | 8 x 65               | RAM32M x 12   | 
++------------------+------------------------------+-----------+----------------------+---------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:01:01 ; elapsed = 00:01:07 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:01:01 ; elapsed = 00:01:07 . Memory (MB): peak = 721.719 ; gain = 514.543
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:01:01 ; elapsed = 00:01:07 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:01:06 ; elapsed = 00:01:12 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:06 ; elapsed = 00:01:12 . Memory (MB): peak = 721.719 ; gain = 514.543
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:06 ; elapsed = 00:01:12 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:01:08 ; elapsed = 00:01:14 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:08 ; elapsed = 00:01:14 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:09 ; elapsed = 00:01:15 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:14 ; elapsed = 00:01:20 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:14 ; elapsed = 00:01:20 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:14 ; elapsed = 00:01:20 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     1|
+|2     |CARRY4 |   143|
+|3     |LUT1   |    51|
+|4     |LUT2   |    86|
+|5     |LUT3   |  1061|
+|6     |LUT4   |   530|
+|7     |LUT5   |   743|
+|8     |LUT6   |  5984|
+|9     |MUXF7  |  2346|
+|10    |MUXF8  |  1156|
+|11    |RAM32M |    92|
+|12    |FDRE   |  3022|
+|13    |IBUF   |   310|
+|14    |OBUF   |   318|
++------+-------+------+
+
+Report Instance Areas: 
++------+-------------------+--------------------+------+
+|      |Instance           |Module              |Cells |
++------+-------------------+--------------------+------+
+|1     |top                |                    | 15843|
+|2     |  command_gen      |command_gen         |   137|
+|3     |    REFRESH        |refresh_tracker     |    84|
+|4     |  request_tracker  |request_tracker     | 12769|
+|5     |    CPU0           |cpu_buffer          |   108|
+|6     |    CPU1           |cpu_buffer_150      |   249|
+|7     |    CPU2           |cpu_buffer_151      |   119|
+|8     |    CPU3           |cpu_buffer_152      |   175|
+|9     |  response_queue   |response_queue      |   408|
+|10    |    CPU0           |response_buffer     |   102|
+|11    |    CPU1           |response_buffer_147 |   102|
+|12    |    CPU2           |response_buffer_148 |   102|
+|13    |    CPU3           |response_buffer_149 |   102|
+|14    |  scheduled_buffer |scheduled_buffer    |  1774|
+|15    |  sort_sixteen     |sort_sixteen        |   126|
+|16    |    SORT8_1        |sort_eight          |    24|
+|17    |      SORT4_1      |sort_four_118       |     5|
+|18    |        SORT2_1    |sort_two_142        |     1|
+|19    |        SORT2_2    |sort_two_143        |     1|
+|20    |        SORT2_3    |sort_two_144        |     1|
+|21    |        SORT2_4    |sort_two_145        |     1|
+|22    |        SORT2_5    |sort_two_146        |     1|
+|23    |      SORT4_2      |sort_four_119       |     5|
+|24    |        SORT2_1    |sort_two_137        |     1|
+|25    |        SORT2_2    |sort_two_138        |     1|
+|26    |        SORT2_3    |sort_two_139        |     1|
+|27    |        SORT2_4    |sort_two_140        |     1|
+|28    |        SORT2_5    |sort_two_141        |     1|
+|29    |      SORT4_3      |sort_four_120       |     5|
+|30    |        SORT2_1    |sort_two_132        |     1|
+|31    |        SORT2_2    |sort_two_133        |     1|
+|32    |        SORT2_3    |sort_two_134        |     1|
+|33    |        SORT2_4    |sort_two_135        |     1|
+|34    |        SORT2_5    |sort_two_136        |     1|
+|35    |      SORT4_4      |sort_four_121       |     4|
+|36    |        SORT2_1    |sort_two_128        |     1|
+|37    |        SORT2_3    |sort_two_129        |     1|
+|38    |        SORT2_4    |sort_two_130        |     1|
+|39    |        SORT2_5    |sort_two_131        |     1|
+|40    |      SORT4_5      |sort_four_122       |     5|
+|41    |        SORT2_1    |sort_two_123        |     1|
+|42    |        SORT2_2    |sort_two_124        |     1|
+|43    |        SORT2_3    |sort_two_125        |     1|
+|44    |        SORT2_4    |sort_two_126        |     1|
+|45    |        SORT2_5    |sort_two_127        |     1|
+|46    |    SORT8_2        |sort_eight_0        |    24|
+|47    |      SORT4_1      |sort_four_89        |     5|
+|48    |        SORT2_1    |sort_two_113        |     1|
+|49    |        SORT2_2    |sort_two_114        |     1|
+|50    |        SORT2_3    |sort_two_115        |     1|
+|51    |        SORT2_4    |sort_two_116        |     1|
+|52    |        SORT2_5    |sort_two_117        |     1|
+|53    |      SORT4_2      |sort_four_90        |     5|
+|54    |        SORT2_1    |sort_two_108        |     1|
+|55    |        SORT2_2    |sort_two_109        |     1|
+|56    |        SORT2_3    |sort_two_110        |     1|
+|57    |        SORT2_4    |sort_two_111        |     1|
+|58    |        SORT2_5    |sort_two_112        |     1|
+|59    |      SORT4_3      |sort_four_91        |     5|
+|60    |        SORT2_1    |sort_two_103        |     1|
+|61    |        SORT2_2    |sort_two_104        |     1|
+|62    |        SORT2_3    |sort_two_105        |     1|
+|63    |        SORT2_4    |sort_two_106        |     1|
+|64    |        SORT2_5    |sort_two_107        |     1|
+|65    |      SORT4_4      |sort_four_92        |     4|
+|66    |        SORT2_1    |sort_two_99         |     1|
+|67    |        SORT2_3    |sort_two_100        |     1|
+|68    |        SORT2_4    |sort_two_101        |     1|
+|69    |        SORT2_5    |sort_two_102        |     1|
+|70    |      SORT4_5      |sort_four_93        |     5|
+|71    |        SORT2_1    |sort_two_94         |     1|
+|72    |        SORT2_2    |sort_two_95         |     1|
+|73    |        SORT2_3    |sort_two_96         |     1|
+|74    |        SORT2_4    |sort_two_97         |     1|
+|75    |        SORT2_5    |sort_two_98         |     1|
+|76    |    SORT8_3        |sort_eight_1        |    26|
+|77    |      SORT4_1      |sort_four_60        |     5|
+|78    |        SORT2_1    |sort_two_84         |     1|
+|79    |        SORT2_2    |sort_two_85         |     1|
+|80    |        SORT2_3    |sort_two_86         |     1|
+|81    |        SORT2_4    |sort_two_87         |     1|
+|82    |        SORT2_5    |sort_two_88         |     1|
+|83    |      SORT4_2      |sort_four_61        |     7|
+|84    |        SORT2_1    |sort_two_79         |     1|
+|85    |        SORT2_2    |sort_two_80         |     1|
+|86    |        SORT2_3    |sort_two_81         |     2|
+|87    |        SORT2_4    |sort_two_82         |     1|
+|88    |        SORT2_5    |sort_two_83         |     2|
+|89    |      SORT4_3      |sort_four_62        |     5|
+|90    |        SORT2_1    |sort_two_74         |     1|
+|91    |        SORT2_2    |sort_two_75         |     1|
+|92    |        SORT2_3    |sort_two_76         |     1|
+|93    |        SORT2_4    |sort_two_77         |     1|
+|94    |        SORT2_5    |sort_two_78         |     1|
+|95    |      SORT4_4      |sort_four_63        |     4|
+|96    |        SORT2_1    |sort_two_70         |     1|
+|97    |        SORT2_3    |sort_two_71         |     1|
+|98    |        SORT2_4    |sort_two_72         |     1|
+|99    |        SORT2_5    |sort_two_73         |     1|
+|100   |      SORT4_5      |sort_four_64        |     5|
+|101   |        SORT2_1    |sort_two_65         |     1|
+|102   |        SORT2_2    |sort_two_66         |     1|
+|103   |        SORT2_3    |sort_two_67         |     1|
+|104   |        SORT2_4    |sort_two_68         |     1|
+|105   |        SORT2_5    |sort_two_69         |     1|
+|106   |    SORT8_4        |sort_eight_2        |    26|
+|107   |      SORT4_1      |sort_four_31        |     5|
+|108   |        SORT2_1    |sort_two_55         |     1|
+|109   |        SORT2_2    |sort_two_56         |     1|
+|110   |        SORT2_3    |sort_two_57         |     1|
+|111   |        SORT2_4    |sort_two_58         |     1|
+|112   |        SORT2_5    |sort_two_59         |     1|
+|113   |      SORT4_2      |sort_four_32        |     7|
+|114   |        SORT2_1    |sort_two_50         |     1|
+|115   |        SORT2_2    |sort_two_51         |     1|
+|116   |        SORT2_3    |sort_two_52         |     2|
+|117   |        SORT2_4    |sort_two_53         |     1|
+|118   |        SORT2_5    |sort_two_54         |     2|
+|119   |      SORT4_3      |sort_four_33        |     5|
+|120   |        SORT2_1    |sort_two_45         |     1|
+|121   |        SORT2_2    |sort_two_46         |     1|
+|122   |        SORT2_3    |sort_two_47         |     1|
+|123   |        SORT2_4    |sort_two_48         |     1|
+|124   |        SORT2_5    |sort_two_49         |     1|
+|125   |      SORT4_4      |sort_four_34        |     4|
+|126   |        SORT2_1    |sort_two_41         |     1|
+|127   |        SORT2_3    |sort_two_42         |     1|
+|128   |        SORT2_4    |sort_two_43         |     1|
+|129   |        SORT2_5    |sort_two_44         |     1|
+|130   |      SORT4_5      |sort_four_35        |     5|
+|131   |        SORT2_1    |sort_two_36         |     1|
+|132   |        SORT2_2    |sort_two_37         |     1|
+|133   |        SORT2_3    |sort_two_38         |     1|
+|134   |        SORT2_4    |sort_two_39         |     1|
+|135   |        SORT2_5    |sort_two_40         |     1|
+|136   |    SORT8_5        |sort_eight_3        |    26|
+|137   |      SORT4_1      |sort_four           |     5|
+|138   |        SORT2_1    |sort_two_26         |     1|
+|139   |        SORT2_2    |sort_two_27         |     1|
+|140   |        SORT2_3    |sort_two_28         |     1|
+|141   |        SORT2_4    |sort_two_29         |     1|
+|142   |        SORT2_5    |sort_two_30         |     1|
+|143   |      SORT4_2      |sort_four_4         |     7|
+|144   |        SORT2_1    |sort_two_21         |     1|
+|145   |        SORT2_2    |sort_two_22         |     1|
+|146   |        SORT2_3    |sort_two_23         |     2|
+|147   |        SORT2_4    |sort_two_24         |     1|
+|148   |        SORT2_5    |sort_two_25         |     2|
+|149   |      SORT4_3      |sort_four_5         |     5|
+|150   |        SORT2_1    |sort_two_16         |     1|
+|151   |        SORT2_2    |sort_two_17         |     1|
+|152   |        SORT2_3    |sort_two_18         |     1|
+|153   |        SORT2_4    |sort_two_19         |     1|
+|154   |        SORT2_5    |sort_two_20         |     1|
+|155   |      SORT4_4      |sort_four_6         |     4|
+|156   |        SORT2_1    |sort_two_12         |     1|
+|157   |        SORT2_3    |sort_two_13         |     1|
+|158   |        SORT2_4    |sort_two_14         |     1|
+|159   |        SORT2_5    |sort_two_15         |     1|
+|160   |      SORT4_5      |sort_four_7         |     5|
+|161   |        SORT2_1    |sort_two            |     1|
+|162   |        SORT2_2    |sort_two_8          |     1|
+|163   |        SORT2_3    |sort_two_9          |     1|
+|164   |        SORT2_4    |sort_two_10         |     1|
+|165   |        SORT2_5    |sort_two_11         |     1|
++------+-------------------+--------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:14 ; elapsed = 00:01:20 . Memory (MB): peak = 721.719 ; gain = 514.543
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:01:13 ; elapsed = 00:01:16 . Memory (MB): peak = 721.719 ; gain = 514.543
+Synthesis Optimization Complete : Time (s): cpu = 00:01:14 ; elapsed = 00:01:20 . Memory (MB): peak = 721.719 ; gain = 514.543
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 545 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 92 instances were transformed.
+  RAM32M => RAM32M (RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMS32, RAMS32): 92 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+121 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:19 ; elapsed = 00:01:22 . Memory (MB): peak = 721.719 ; gain = 514.543
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.094 . Memory (MB): peak = 721.719 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Sat Apr 30 17:38:18 2022...

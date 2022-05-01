@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+<!--The data in this file is primarily intended for consumption by Xilinx tools.
+The structure and the elements are likely to change over the next few releases.
+This means code written to parse this file will need to be revisited each subsequent release.-->
+<application name="pa" timeStamp="Sat Apr 30 17:36:45 2022">
+<section name="Project Information" visible="false">
+<property name="ProjectID" value="5731a918896a4d25bc96a5ce87297b04" type="ProjectID"/>
+<property name="ProjectIteration" value="1" type="ProjectIteration"/>
+</section>
+<section name="PlanAhead Usage" visible="true">
+<item name="Project Data">
+<property name="SrcSetCount" value="1" type="SrcSetCount"/>
+<property name="ConstraintSetCount" value="1" type="ConstraintSetCount"/>
+<property name="DesignMode" value="RTL" type="DesignMode"/>
+<property name="SynthesisStrategy" value="Vivado Synthesis Defaults" type="SynthesisStrategy"/>
+<property name="ImplStrategy" value="Vivado Implementation Defaults" type="ImplStrategy"/>
+</item>
+<item name="Java Command Handlers">
+<property name="AddSources" value="7" type="JavaHandler"/>
+<property name="EditDelete" value="2" type="JavaHandler"/>
+<property name="OpenProject" value="1" type="JavaHandler"/>
+<property name="RunSynthesis" value="32" type="JavaHandler"/>
+<property name="SaveAllFiles" value="52" type="JavaHandler"/>
+<property name="SetTopNode" value="23" type="JavaHandler"/>
+<property name="ViewTaskSynthesis" value="1" type="JavaHandler"/>
+</item>
+<item name="Gui Resources Info">
+<property name="PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, [root, Design Sources, memory_controller (memory_controller.v" value="64" type="GuiResourceData"/>
+<property name="PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, [, Synthesis, Run Synthesis], 17, false" value="1" type="GuiResourceData"/>
+<property name="PAResourceEtoH.GettingStartedView_RECENT_PROJECTS, C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.xpr, 0" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.MainMenuMgr_FILE, File" value="18" type="GuiResourceData"/>
+<property name="PAResourceItoN.MainMenuMgr_OPEN_RECENT_FILE, Open Recent File" value="9" type="GuiResourceData"/>
+<property name="PAResourceOtoP.PAViews_CODE, Code" value="16" type="GuiResourceData"/>
+<property name="RDIResource.ConfirmSaveTextEditsDialog_YES, Yes" value="9" type="GuiResourceData"/>
+<property name="RDIResourceCommand.RDICommands_SAVE_ALL_FILES, Save All Files..." value="9" type="GuiResourceData"/>
+<property name="command_gen.v, 136, 281" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 149, 161" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 153, 178" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 178, 268" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 178, 68" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 203, 164" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 271, 228" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 272, 366" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 295, 78" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 344, 172" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 370, 300" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 411, 225" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 734, 146" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 746, 349" value="1" type="GuiResourceData"/>
+<property name="command_gen.v, 96, 523" value="1" type="GuiResourceData"/>
+<property name="cpu_buffer.v, 39, 314" value="1" type="GuiResourceData"/>
+<property name="cpu_buffer.v, 553, 145" value="1" type="GuiResourceData"/>
+<property name="cpu_buffer.v, 70, 523" value="1" type="GuiResourceData"/>
+<property name="memory_controller.v, 117, 304" value="1" type="GuiResourceData"/>
+<property name="memory_controller.v, 130, 320" value="1" type="GuiResourceData"/>
+<property name="memory_controller.v, 289, 73" value="1" type="GuiResourceData"/>
+<property name="memory_controller.v, 60, 246" value="1" type="GuiResourceData"/>
+<property name="memory_controller.v, 77, 324" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 101, 524" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 120, 500" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 126, 334" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 127, 404" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 147, 70" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 184, 296" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 219, 333" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 281, 238" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 286, 226" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 291, 77" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 325, 123" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 336, 124" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 342, 128" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 426, 363" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 427, 146" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 433, 230" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 486, 297" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 495, 244" value="1" type="GuiResourceData"/>
+<property name="request_tracker.v, 95, 484" value="1" type="GuiResourceData"/>
+<property name="response_buffer.v, 306, 70" value="1" type="GuiResourceData"/>
+<property name="response_buffer.v, 72, 160" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 131, 236" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 168, 346" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 170, 381" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 176, 346" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 178, 210" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 286, 73" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 349, 216" value="1" type="GuiResourceData"/>
+<property name="response_queue.v, 67, 529" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 133, 291" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 166, 296" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 288, 73" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 334, 161" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 335, 161" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 344, 182" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 344, 280" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 344, 301" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 344, 317" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 344, 332" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 345, 228" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 345, 250" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 345, 260" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 346, 214" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 365, 352" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 371, 386" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 373, 400" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 373, 414" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 373, 440" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 374, 353" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 374, 368" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 382, 350" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 44, 524" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 441, 173" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 471, 328" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 473, 522" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 64, 232" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 72, 193" value="1" type="GuiResourceData"/>
+<property name="schedule_algo.v, 82, 201" value="1" type="GuiResourceData"/>
+<property name="scheduled_buffer.v, 302, 70" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 138, 470" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 144, 462" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 160, 284" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 161, 90" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 168, 280" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 289, 78" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 313, 92" value="1" type="GuiResourceData"/>
+<property name="sort_eight.v, 48, 524" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 133, 472" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 139, 402" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 143, 346" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 148, 344" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 157, 228" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 289, 75" value="1" type="GuiResourceData"/>
+<property name="sort_four.v, 303, 235" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 152, 526" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 153, 387" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 161, 364" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 165, 282" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 186, 300" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 186, 398" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 294, 78" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 30, 524" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 333, 299" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 341, 160" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 357, 178" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 374, 196" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 424, 176" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 573, 163" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 624, 162" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 632, 211" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 754, 193" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 787, 164" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 819, 181" value="1" type="GuiResourceData"/>
+<property name="sort_sixteen.v, 830, 158" value="1" type="GuiResourceData"/>
+<property name="sort_two.v, 286, 72" value="1" type="GuiResourceData"/>
+<property name="sort_two.v, 79, 516" value="1" type="GuiResourceData"/>
+</item>
+<item name="Other">
+<property name="GuiMode" value="2" type="GuiMode"/>
+<property name="BatchMode" value="0" type="BatchMode"/>
+<property name="TclMode" value="1" type="TclMode"/>
+</item>
+</section>
+</application>
+</document>

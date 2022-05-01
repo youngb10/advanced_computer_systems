@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Sat Apr 30 17:36:47 2022
+# Process ID: 9172
+# Current directory: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1
+# Command line: vivado.exe -log memory_controller.vds -mode batch -messageDb vivado.pb -notrace -source memory_controller.tcl
+# Log file: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1/memory_controller.vds
+# Journal file: C:/Users/Bennett Young/Documents/Memory_Controller/Memory_Controller.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source memory_controller.tcl -notrace
