@@ -9,7 +9,7 @@ The object of this project is to design a DDR memory controller using Verilog. T
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/memoryController.png" alt="250MB" width="900">
+    <img src="images/memoryController.png" alt="250MB" width="600">
   </a>
 <div align="left">
 
@@ -70,7 +70,7 @@ The memory controller is assembled of many smaller modules. Each module describe
 <br />
 <div align="center">
   <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
-    <img src="images/high_level.png" alt="250MB" width="800">
+    <img src="images/high_level.png" alt="250MB" width="700">
   </a>
 <div align="left">
 <br />
