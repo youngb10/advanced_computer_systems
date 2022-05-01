@@ -16,8 +16,9 @@ The object of this project is to design a DDR memory controller using Verilog. T
 <div align="center">
 Source: Professor Tong Zhang's Part3.pdf, Advanced Computer Systems, ECSE 4961
 <div align="left">
+<br />
 
-  The designed memory controller has the following features:
+The designed memory controller has the following features:
 
 - Up to 4 CPUs may simultaneously make requests
 - Allows CPUs to assign a priority to each request
