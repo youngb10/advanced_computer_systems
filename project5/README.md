@@ -142,14 +142,60 @@ The scheduled buffer takes as input the sorted list of requests. The scheduled b
 <br />
 
 ### Command Generator Structure
-The command generator takes the current active request and the row address of the next request as input, and uses these to directly command the DRAM. 
+The command generator takes the current active request and the row address of the next request as inputs, and uses these to directly command the DRAM. The command generator is mainly controlled by a finite state machine with four states. The four implemented states are Idle, Active and Same Next Row, Active and Different Next Row, and Refresh. Shown below is a simplified finite state machine diagram.
+
 <br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/fsm.png" alt="250MB" width="350">
+  </a>
+<div align="left">
+<br />
+
+The commands that are output by the command generator are directly controlled by the state of the FSM, the inputs from the scheduled buffer, and a counter that determines how long the command generator has been in a specific state. For example, if the command generator is idle, the output command will be "Command Inhibit". The structure of the output commands is also important. There are four outputs that control which command is occurring: CS#, RAS#, CAS#, and WE#. The outputs that should be active for each command are shown below:
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/outputs.png" alt="250MB" width="300">
+  </a>
+<div align="left">
+<br />
+
+For example, if the Activate command is desired, the control outputs will be {CS#, RAS#, CAS#, WE#} = 4'b0011. The state that the command generator is in will determine which command is desired. Example control outputs are given below. If the Activate command is desired at a bank with address 1, the command in the image will be A1. If a precharge is desired at a bank with address 3, the command will be P3. 
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/commands.png" alt="250MB" width="400">
+  </a>
+<div align="left">
+<br />
+
+As can be seen, the length of time the request takes up and the commands which are utilized differ depending on what state the command generator is in. If the command generator is in state[01], which means that the row address of the next request is the same as the row address of the current request, no Precharge commands are necessary at the end of the request. This is because the row buffer does not need to be reset; the same row will be used for the next request. When the command generator is in state[10], meaning the next request has a different row address, the row buffer must be reset. Therefore, Precharge commands must be given to every bank to prepare for the next request. 
+<br />
+
+The address mapping scheme determines how the DRAM receives the addresses given by the CPU requests. The mapping scheme can dramatically affect the performance of the DRAM. As such, it is important to optimize. With an open row-buffer policy, where the row buffer is held until a request has a different row address, it is desired that the row address changes as rarely as possible. With any degree of access locality, this means that the row address should ideally be the most significant bits of any memory address. The address mapping scheme implemented by this memory controller is shown below.
+
+<br />
+<div align="center">
+  <a href="https://github.com/Nesathurai/advanced_computer_systems.git">
+    <img src="images/addr_scheme.png" alt="250MB" width="400">
+  </a>
+<div align="left">
+<br />
+
+The DRAM refresh is another critical element of the command generator. If the current DRAM data is not refreshed often enough, the capacitors holding the data will lose charge until the data is lost. This memory controller refreshes the DRAM every 64ms to ensure that the data is not lost. A counter inside the command generator keeps track of how long it has been since the last refresh. If the time is over approximately 63ms, a refresh is queued. As soon as the command generator enters the idle state, it will next enter the refresh state if a refresh is queued. In the refresh state, the command generator iterates through every row address and issues the Refresh command, ensuring that the data does not get lost. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- Conclusion -->
 
 ## Conclusion
+Memory controllers are massively complex elements of hardware that fulfill many critical tasks. Neither the CPU nor the DRAM will be able to operate optimally, or at all, with a sub-par or dysfunctional memory controller. While there are certainly improvable elements in this memory controller, it covers many of the critical functions and does so with reliable speed. 
+<br />
+
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
